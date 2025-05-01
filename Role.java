@@ -1,10 +1,16 @@
 public class Role {
-    private final int reqRank;
+    private final String name;
+    private final int level;
+    private final String line;
+    private final Area area;
     private int practiceChips;
     // and whatever other attributes we get from the xml file
 
-    public Role(int reqRank) { // add attributes from xml
-        this.reqRank = reqRank;
+    public Role(String name, int level, String line, Area area) {
+        this.name = name;
+        this.level = level;
+        this.line = line;
+        this.area = area;
         this.practiceChips = 0;
     }
 
@@ -20,9 +26,19 @@ public class Role {
         return this.practiceChips;
     }
 
-    public int getReqRank() {
-        return reqRank;
+    public int getLevel() {
+        return level;
     }
 
-    // add getters for other xml attributes
+    public String getLine() {
+        return line;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Area getArea() {
+        return area;
+    }
 }

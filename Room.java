@@ -1,21 +1,19 @@
 public class Room {
     protected final String name;
-    protected final Room[] neighbors;
+    protected final String[] neighbors;
+    protected final Area area;
 
-    // this might be problematic, we might need to initialize
-    // with a list of room names, and then we can actually get
-    // the neighbors in a getter method. A static Hashmap<String, Room>
-    // might be helpful
-    public Room(String name, Room[] neighbors) {
+    public Room(String name, String[] neighbors, Area area) {
         this.name = name;
         this.neighbors = neighbors;
+        this.area = area;
     }
 
     public String getName() {
         return name;
     }
 
-    public Room[] getNeighbors() {
+    public String[] getNeighbors() {
         return neighbors;
     }
 }
