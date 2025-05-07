@@ -1,11 +1,11 @@
 import java.util.HashMap;
 
 public class Player {
-    String name;
-    int rank;
-    Room location;
-    Role role;
-    HashMap<String, Integer> assets;
+    private String name;
+    private int rank;
+    private Room location;
+    private Role role;
+    private HashMap<String, Integer> assets;
 
     private int points;
 
@@ -61,6 +61,10 @@ public class Player {
 
     public boolean canTakeRole(Role role) {
         return false;
+    }
+
+    public boolean hasRole() {
+        return role != null;
     }
 
     public String getName() {

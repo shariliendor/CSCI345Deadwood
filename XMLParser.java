@@ -38,5 +38,7 @@ public class XMLParser {
       }
    }
 
-   public Board parseBoard(String fileName) {}
+   public Board parseBoard(String fileName) {
+       return new Board(new Room[10], new Deck(new Card[40]));
+   }
 }
