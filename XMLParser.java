@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-public class AttributesXmlParsing {
+public class XMLParser {
    public Deck parseDeck() {
       try {      	  
 	     //Input the XML file
@@ -37,4 +37,6 @@ public class AttributesXmlParsing {
          e.printStackTrace();
       }
    }
+
+   public Board parseBoard(String fileName) {}
 }

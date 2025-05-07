@@ -1,6 +1,6 @@
 public class GameManager {
-    private Player[] players;
-    private Board board;
+    private final Player[] players;
+    private final Board board;
     private int daysLeft;
     private int currentPlayer;
 
@@ -10,6 +10,8 @@ public class GameManager {
         this.daysLeft = days;
         currentPlayer = (int) (Math.random() * players.length) - 1;
     }
+
+    public void playGame() {}
 
     public void playDay() {
         // people take turns until one scene left to shoot
@@ -24,5 +26,9 @@ public class GameManager {
         players[currentPlayer].takeTurn();
         currentPlayer ++;
         currentPlayer %= players.length;
+    }
+
+    public Player calcWinner() {
+        return players[0];
     }
 }
