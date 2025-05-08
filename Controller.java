@@ -67,17 +67,31 @@ public class Controller {
     }
 
     // input stuff
-    public void getNumPlayers() {}
+    public int getNumPlayers() {
+        return input.getNumPlayers();
+    }
 
-    public void getPlayerName(int name) {}
+    public String getPlayerName(int playerNum) {
+        return input.getPlayerName(playerNum);
+    }
 
-    public void selectAction(String[] action) {}
+    public String selectAction(String[] actions) {
+        return input.selectAction(actions);
+    }
 
-    public void selectRoom(String[] room) {}
+    public Room selectRoom(String[] rooms) {
+        return input.selectRoom(rooms);
+    }
 
-    public void selectRole(String[] role) {}
+    public Role selectRole(String[] roles) {
+        return input.selectRole(roles);
+    }
 
-    public void chooseRank() {}
+    public int chooseRank() {
+        return input.chooseRank();
+    }
 
-    public void selectOption(String[] option) {}
+    public String selectOption(String[] options) {
+        return input.selectOption(options);
+    }
 }

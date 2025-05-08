@@ -16,4 +16,8 @@ public class Room {
     public String[] getNeighbors() {
         return neighbors;
     }
+
+    public boolean isSet() {
+        return false;
+    }
 }

@@ -7,10 +7,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
 public class XMLParser {
-   public Deck parseDeck() {
+   public Deck parseDeck(String fileName) {
        Deck deck = new Deck();
        try {
-           File inputXmlFile = new File("cards.xml");
+           File inputXmlFile = new File(fileName);
            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
            DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
            Document xmldoc = docBuilder.parse(inputXmlFile);
@@ -39,9 +39,9 @@ public class XMLParser {
                    Element areaElement = (Element) partElement.getElementsByTagName("area").item(0);
                    int x = Integer.parseInt(areaElement.getAttribute("x"));
                    int y = Integer.parseInt(areaElement.getAttribute("y"));
-                   int h = Integer.parseInt(areaElement.getAttribute("h"));
                    int w = Integer.parseInt(areaElement.getAttribute("w"));
-                   Area area = new Area(x, y, h, w);
+                   int h = Integer.parseInt(areaElement.getAttribute("h"));
+                   Area area = new Area(x, y, w, h);
 
                    String line = partElement.getElementsByTagName("line").item(0).getTextContent();
 

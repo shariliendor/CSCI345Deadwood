@@ -1,5 +1,9 @@
 public class SetupManager {
-    public SetupManager() {}
+    Controller controller;
+
+    public SetupManager(Controller controller) {
+        this.controller = controller;
+    }
 
     public int getDaysToPlay(int numPlayers) {
         if (numPlayers <= 3) {
@@ -32,7 +36,7 @@ public class SetupManager {
         Player[] players = new Player[numPlayers];
 
         for (int i = 0; i < numPlayers; i++) {
-            name = "Player " + (i + 1); // could ask players for names instead
+            name = controller.getPlayerName(i + 1);
             Player newPlayer = new Player(name, startRank, startCredits);
             players[i] = newPlayer;
         }

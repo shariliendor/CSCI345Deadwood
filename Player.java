@@ -24,11 +24,15 @@ public class Player {
     }
 
     public void earn(int earned, String currency) {
-        //this.assets.get(currency) += earned;
+        int currAmount = assets.get(currency);
+        assets.put(currency, currAmount + earned);
+        points += earned;
     }
 
     public void spend(int spent, String currency) {
-        //this.assets.get(currency) -= spent;
+        int currAmount = assets.get(currency);
+        assets.put(currency, currAmount - spent);
+        points -= spent;
     }
 
     public void act() {
@@ -52,7 +56,7 @@ public class Player {
     }
 
     public boolean canMove() {
-        return role == null;
+        return !hasRole();
     }
 
     public void takeRole(Role role) {

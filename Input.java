@@ -1,17 +1,31 @@
 public interface Input {
     // james if you could copy paste these methods into the controller that would be amazing
-    default void getNumPlayers() {}
+    default int getNumPlayers() {
+        return 0;
+    }
 
-    default void getPlayerName(int name) {}
+    default String getPlayerName(int playerNum) {
+        return null;
+    }
 
-    default void selectAction(String[] action) {}
+    default String selectAction(String[] action) {
+        return null;
+    }
 
-    default void selectRoom(String[] room) {}
+    default Room selectRoom(String[] room) {
+        return null;
+    }
 
-    default void selectRole(String[] role) {}
+    default Role selectRole(String[] role) {
+        return null;
+    }
 
-    default void chooseRank() {}
+    default int chooseRank() {
+        return 0;
+    }
 
-    default void selectOption(String[] option) {}
+    default String selectOption(String[] option) {
+        return null;
+    }
 
 }

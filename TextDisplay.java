@@ -1,7 +1,4 @@
 public class TextDisplay implements Display {
-    private final String welcomeMessage = "Welcome to Deadwood!";
-    private final String invalidInputMessage = "Invalid input.";
-
     public TextDisplay() {
 
     }
@@ -11,11 +8,11 @@ public class TextDisplay implements Display {
     }
 
     public void displayWelcome() {
-        displayMessage(welcomeMessage);
+        displayMessage("Welcome to Deadwood!");
     }
 
     public void displayInvalidInput(String message) {
-        displayMessage(invalidInputMessage + " " + message);
+        displayMessage("Invalid input. " + message);
     }
 
     public void displayPlayerTurn(Player player) {
@@ -51,21 +48,27 @@ public class TextDisplay implements Display {
     // uml says weird parameters, james if you remember what the parameters should be, please change this lol
     public void displayActOutcome(boolean success, int dollarsEarned, int creditsEarned, int shotsLeft) {}
 
-    public void displayRehearseOutcome() {}
+    public void displayRehearseOutcome() {
+        System.out.println("You have rehearsed. Acting will now be more likely to succeed.");
+    }
 
-    public void displayMoveOutcome(Room room) {}
+    public void displayMoveOutcome(Room room) {
+        System.out.println("You are now in the " + room.getName() + ".");
+    }
 
     // were gonna have to come up with something else for the winnings because
     // java doesn't do tuples and we cant have multiple data types in one list :(
     public void displayWrapOutcome(Set set, int scenesLeft) {}
 
-    public void announceWinner(Player player) {}
+    public void announceWinner(Player player) {
+        System.out.println(player.getName() + "wins with " + player.getPoints() + "points!");
+    }
 
     public String join(String[] arr, String connector) {
         StringBuilder str = new StringBuilder();
 
         for (int i = 0; i < arr.length - 1; i++) {
-            str.append(arr[i] + connector);
+            str.append(arr[i]).append(connector);
         }
         str.append(arr[arr.length - 1]);
 

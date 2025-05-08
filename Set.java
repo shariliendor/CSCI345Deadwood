@@ -4,11 +4,11 @@ public class Set extends Room{
     private Card card;
     private Role[] extraRoles;
 
-    // add other xml attributes
     public Set(String name, String[] neighbors, Area area, int shotsToComplete, Role[] extraRoles) {
         super(name, neighbors, area);
         this.shotsToComplete = shotsToComplete;
         this.extraRoles = extraRoles;
+        this.shotCounters = 0;
     }
 
     public boolean isActive() {
@@ -29,5 +29,9 @@ public class Set extends Room{
 
     public Card getCard() {
         return this.card;
+    }
+
+    public boolean isSet() {
+        return true;
     }
 }

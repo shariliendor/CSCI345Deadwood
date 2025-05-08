@@ -1,16 +1,38 @@
+import java.util.Scanner;
+
 public class TextInput implements Input{
-    public void getNumPlayers() {}
+    Scanner sc;
 
-    public void getPlayerName(int name) {}
+    public TextInput(Scanner sc) {
+        this.sc = sc;
+    }
 
-    public void selectAction(String[] action) {}
+    public int getNumPlayers() {
+        return 0;
+    }
 
-    public void selectRoom(String[] room) {}
+    public String getPlayerName(int name) {
+        return null;
+    }
 
-    public void selectRole(String[] role) {}
+    public String selectAction(String[] actions) {
+        return null;
+    }
 
-    public void chooseRank() {}
+    public Room selectRoom(String[] rooms) {
+        return null;
+    }
 
-    public void selectOption(String[] option) {}
+    public Role selectRole(String[] roles) {
+        return null;
+    }
+
+    public int chooseRank() {
+        return 0;
+    }
+
+    public String selectOption(String[] options) {
+        return null;
+    }
 
 }

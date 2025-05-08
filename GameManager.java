@@ -4,17 +4,23 @@ public class GameManager {
     private int daysLeft;
     private int currentPlayer;
 
-    public GameManager(Player[] players, Board board, int days) {
+    public GameManager(Player[] players, Board board, Deck deck, int days) {
         this.players = players;
         this.board = board;
         this.daysLeft = days;
         currentPlayer = (int) (Math.random() * players.length) - 1;
     }
 
-    public void playGame() {}
+    public void playGame() {
+        while (daysLeft > 0) {
+            playDay();
+        }
+    }
 
     public void playDay() {
-        // people take turns until one scene left to shoot
+        while(board.getScenesToShoot() > 1) {
+            nextTurn();
+        }
         daysLeft --;
     }
 
