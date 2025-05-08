@@ -1,4 +1,5 @@
 public class Room {
+    // maybe change to private
     protected final String name;
     protected final String[] neighbors;
     protected final Area area;

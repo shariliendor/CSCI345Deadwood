@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 public class TextDisplay implements Display {
     public TextDisplay() {
 
@@ -32,21 +34,26 @@ public class TextDisplay implements Display {
 
     }
 
+    public void displayUpgradeCosts() {
+        // loop though upgrade cost hashmap
+    }
+
     public void displayRoomInfo(Room room) {
         System.out.println("Name: " + room.getName());
         System.out.println("Neighbors: " + join(room.getNeighbors(), ", "));
     }
 
-    public void displayGameState(Board board, Player[] players) {}
+    //public void displayGameState(Board board, Player[] players) {}
 
-    public void displayStandings(Player[] players) {}
+    public void displayStandings(Player[] players) {
+        // loop through players, sort by points
+    }
 
     public void displayUpdatedRank(int newRank) {
         System.out.println("Congratulations! You are now rank " + newRank + "!");
     }
 
-    // uml says weird parameters, james if you remember what the parameters should be, please change this lol
-    public void displayActOutcome(boolean success, int dollarsEarned, int creditsEarned, int shotsLeft) {}
+    public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {}
 
     public void displayRehearseOutcome() {
         System.out.println("You have rehearsed. Acting will now be more likely to succeed.");
@@ -56,9 +63,8 @@ public class TextDisplay implements Display {
         System.out.println("You are now in the " + room.getName() + ".");
     }
 
-    // were gonna have to come up with something else for the winnings because
-    // java doesn't do tuples and we cant have multiple data types in one list :(
-    public void displayWrapOutcome(Set set, int scenesLeft) {}
+    // playerEarnings is a list of HashMaps with playerIndex(from gameManager), dollars, credits
+    public void displayWrapOutcome(Set set, HashMap<String, Integer>[] playerEarnings, int scenesLeft) {}
 
     public void announceWinner(Player player) {
         System.out.println(player.getName() + "wins with " + player.getPoints() + "points!");

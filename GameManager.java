@@ -25,7 +25,7 @@ public class GameManager {
     }
 
     public void wrap(Set set) {
-
+        // follow rules
     }
 
     public void nextTurn() {

@@ -11,12 +11,12 @@ public class TextInput implements Input{
         return 0;
     }
 
-    public String getPlayerName(int name) {
+    public String getPlayerName(int playerNum) {
         return null;
     }
 
     public String selectAction(String[] actions) {
-        return null;
+        return selectOption("action", actions);
     }
 
     public Room selectRoom(String[] rooms) {
@@ -29,9 +29,9 @@ public class TextInput implements Input{
 
     public int chooseRank() {
         return 0;
-    }
+    }// give possible ranks param
 
-    public String selectOption(String[] options) {
+    public String selectOption(String toSelect, String[] options) {
         return null;
     }
 
