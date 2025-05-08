@@ -1,19 +1,27 @@
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 
 public class Deck {
-    // might consider using a stack for easier drawing
-    private Card[] cards;
+    private Stack<Card> cards;
 
-     public Deck(Card[] cards) {
-        this.cards = cards;
+    public Deck() {
+        this.cards = new Stack<>();
+    }
+
+    public void addCard(Card card) {
+        cards.push(card);
     }
 
     public void shuffle() {
-
+        Collections.shuffle(cards);
     }
 
     public Card draw() {
-        return cards[0];
+        return cards.isEmpty() ? null : cards.pop();
+    }
+
+    public boolean isEmpty() {
+        return cards.isEmpty();
     }
 }
+
