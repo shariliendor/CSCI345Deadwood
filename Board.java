@@ -1,10 +1,12 @@
 public class Board {
     private final Room[] rooms;
-    private final Deck deck;
+    private final Set[] sets;
+    private final CastingOffice castingOffice;
 
-    public Board(Room[] rooms, Deck deck) {
+    public Board(Room[] rooms, Set[] sets, CastingOffice castingOffice) {
         this.rooms = rooms;
-        this.deck = deck;
+        this.sets = sets;
+        this.castingOffice = castingOffice;
     }
 
     public int getScenesToShoot() {
@@ -12,11 +14,6 @@ public class Board {
         // loop through rooms
             // if room is a set, and its active, increment count
         // return count
-    }
-
-    private void dealToSets() {
-        // loop rooms
-            // if set, draw a card and set set's card to the card drawn
     }
 
     public void resetShotMarkers() {

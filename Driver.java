@@ -3,8 +3,8 @@ import java.util.Scanner;
 public class Driver {
     public static void main(String[] args) {
         XMLParser xmlParser = new XMLParser();
-        Board board = xmlParser.parseBoard("board.xml");
         Deck deck = xmlParser.parseDeck("cards.xml");
+        Board board = xmlParser.parseBoard("board.xml");
 
         Scanner sc = new Scanner(System.in);
         Input input = new TextInput(sc);

@@ -24,6 +24,11 @@ public class GameManager {
         daysLeft --;
     }
 
+    private void dealToSets() {
+        // loop sets
+        // draw a card and set set's card to the card drawn
+    }
+
     public void wrap(Set set) {
         // follow rules
     }

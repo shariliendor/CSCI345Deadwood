@@ -1,12 +1,14 @@
 public class Set extends Room{
     private final int shotsToComplete;
+    private final Area[] shotCounterAreas;
     private int shotCounters;
     private Card card;
-    private Role[] extraRoles;
+    private final Role[] extraRoles;
 
-    public Set(String name, String[] neighbors, Area area, int shotsToComplete, Role[] extraRoles) {
+    public Set(String name, String[] neighbors, Area area, Area[] shotCounterAreas, Role[] extraRoles) {
         super(name, neighbors, area);
-        this.shotsToComplete = shotsToComplete;
+        this.shotsToComplete = shotCounterAreas.length;
+        this.shotCounterAreas = shotCounterAreas;
         this.extraRoles = extraRoles;
         this.shotCounters = 0;
     }
@@ -31,7 +33,11 @@ public class Set extends Room{
         return this.card;
     }
 
-    public boolean isSet() {
-        return true;
+    public Area[] getShotCounterAreas() {
+        return this.shotCounterAreas;
+    }
+
+    public Role[] getExtraRoles() {
+        return extraRoles;
     }
 }

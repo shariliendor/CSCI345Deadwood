@@ -1,8 +1,8 @@
 public class Room {
-    // maybe change to private
-    protected final String name;
-    protected final String[] neighbors;
-    protected final Area area;
+    private final String name;
+    private final String[] neighbors;
+
+    private final Area area;
 
     public Room(String name, String[] neighbors, Area area) {
         this.name = name;
@@ -18,7 +18,7 @@ public class Room {
         return neighbors;
     }
 
-    public boolean isSet() {
-        return false;
+    public Area getArea() {
+        return area;
     }
 }

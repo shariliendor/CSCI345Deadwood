@@ -23,5 +23,9 @@ public class Deck {
     public boolean isEmpty() {
         return cards.isEmpty();
     }
+
+    public Stack<Card> getCards() {
+        return this.cards;
+    }
 }
 
