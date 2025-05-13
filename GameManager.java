@@ -8,7 +8,7 @@ public class GameManager {
         this.players = players;
         this.board = board;
         this.daysLeft = days;
-        currentPlayer = (int) (Math.random() * players.length) - 1;
+        currentPlayer = (int) (Math.random() * players.length);
     }
 
     public void playGame() {

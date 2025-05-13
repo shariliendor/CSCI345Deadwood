@@ -8,11 +8,13 @@ public class TextInput implements Input{
     }
 
     public int getNumPlayers() {
-        return 0;
+        System.out.print("Enter the number of players: ");
+        return Integer.parseInt(sc.nextLine());
     }
 
     public String getPlayerName(int playerNum) {
-        return null;
+        System.out.print("Enter name for player " + playerNum + ": ");
+        return sc.nextLine();
     }
 
     public String selectAction(String[] actions) {

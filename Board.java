@@ -10,14 +10,18 @@ public class Board {
     }
 
     public int getScenesToShoot() {
-        return 0;
-        // loop through rooms
-            // if room is a set, and its active, increment count
-        // return count
+        int activeSets = 0;
+        for (Set set: sets) {
+            if (set.isActive())
+                activeSets++;
+        }
+
+        return activeSets;
     }
 
     public void resetShotMarkers() {
-        // loop rooms
-            // if set, call resetShotMarkers in it
+        for (Set set: sets) {
+            set.resetShotCounters();
+        }
     }
 }
