@@ -23,7 +23,8 @@ public class Player {
         // init hashmap with dollars and credits
     }
 
-    public void takeTurn() {
+    public void takeTurn(Controller controller) {
+        controller.displayPlayerTurn(this);
         // get possible actions
         // while there are actions the player can do
             // ask user which action to do
@@ -65,9 +66,7 @@ public class Player {
     }
 
     public boolean canAct() {
-        return false;
-        // check if have role
-
+        return role != null;
     }
 
     public void rehearse() {
@@ -92,8 +91,7 @@ public class Player {
     }
 
     public boolean canTakeRole(Role role) {
-        return false;
-        //checks if have required rank for role
+        return rank >= role.getLevel();
     }
 
     public boolean canTakeRole() {return false;

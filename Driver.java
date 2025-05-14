@@ -17,7 +17,7 @@ public class Driver {
         Player[] players = setupManager.createPlayers(numPlayers);
         int daysToPlay = setupManager.getDaysToPlay(numPlayers);
 
-        GameManager gameManager = new GameManager(players, board, deck, daysToPlay);
+        GameManager gameManager = new GameManager(players, board, deck, controller, daysToPlay);
 
         gameManager.playGame();
     }

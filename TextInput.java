@@ -22,19 +22,42 @@ public class TextInput implements Input{
     }
 
     public Room selectRoom(String[] rooms) {
-        return null;
+        String roomName = selectOption("room", rooms);
+        return Room.getRoom(roomName);
     }
 
     public Role selectRole(String[] roles) {
+        // figure out how to turn a string into a role
+        // maybe cards and sets have roleName hashMaps
         return null;
     }
 
     public int chooseRank() {
+        // when user inputs a value, check if player can buy rank
         return 0;
     }// give possible ranks param
 
-    public String selectOption(String toSelect, String[] options) {
-        return null;
+    private String selectOption(String toSelect, String[] options) {
+        System.out.println("Select a(n) " + toSelect + ": ");
+
+        for (int i = 0; i < options.length; i++) {
+            System.out.println("[" + (i+1) + "] " + options[i]);
+        }
+
+        int index = getNumWithinRange(1, options.length);
+
+        return options[index];
+    }
+
+    private int getNumWithinRange(int min, int max) {
+        int input = Integer.parseInt(sc.nextLine());
+
+        while (input < min || input > max) {
+            System.out.println("Invalid input. Enter a number between " + min + " and " + max);
+            input = Integer.parseInt(sc.nextLine());
+        }
+
+        return input;
     }
 
 }

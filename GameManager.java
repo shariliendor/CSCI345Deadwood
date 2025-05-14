@@ -3,12 +3,14 @@ public class GameManager {
     private final Board board;
     private int daysLeft;
     private int currentPlayer;
+    private Controller controller;
 
-    public GameManager(Player[] players, Board board, Deck deck, int days) {
+    public GameManager(Player[] players, Board board, Deck deck, Controller controller, int days) {
         this.players = players;
         this.board = board;
         this.daysLeft = days;
         currentPlayer = (int) (Math.random() * players.length);
+        this.controller = controller;
     }
 
     public void playGame() {
@@ -34,7 +36,7 @@ public class GameManager {
     }
 
     public void nextTurn() {
-        players[currentPlayer].takeTurn();
+        players[currentPlayer].takeTurn(controller);
         currentPlayer ++;
         currentPlayer %= players.length;
     }

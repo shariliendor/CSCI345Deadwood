@@ -53,7 +53,12 @@ public class TextDisplay implements Display {
         System.out.println("Congratulations! You are now rank " + newRank + "!");
     }
 
-    public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {}
+    public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {
+        if (success) System.out.println("Success!");
+        else System.out.println("Failure...");
+        System.out.println("You earned " + currencyEarned + " " + currency + "(s).");
+        System.out.println("There are " + shotsLeft + " scenes left to shoot.");
+    }
 
     public void displayRehearseOutcome() {
         System.out.println("You have rehearsed. Acting will now be more likely to succeed.");
