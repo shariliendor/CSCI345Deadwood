@@ -5,7 +5,7 @@ public class Room {
     private final String[] neighbors;
     private final Area area;
 
-    private static HashMap<String, Room> roomNames;
+    private static HashMap<String, Room> roomNames = new HashMap<>();
 
     public Room(String name, String[] neighbors, Area area) {
         this.name = name;
