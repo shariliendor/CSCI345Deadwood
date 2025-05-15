@@ -38,6 +38,20 @@ public class Player {
     }
 
     public boolean canUpgrade() {
+        // Must be in the casting office
+        if (!location.getName().equalsIgnoreCase("casting office")) {
+            return false;
+        }
+
+        // Check if player can afford any rank upgrade above current rank
+        for (int newRank = rank + 1; newRank <= UpgradeManager.getMaxRank(); newRank++) {
+            int dollarCost = UpgradeManager.getDollarCost(newRank);
+            int creditCost = UpgradeManager.getCreditCost(newRank);
+            if (assets.get("dollar") >= dollarCost || assets.get("credit") >= creditCost) {
+                return true;
+            }
+        }
+
         return false;
         // if in casting office and can buy at least one rank
     }
