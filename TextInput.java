@@ -9,7 +9,7 @@ public class TextInput implements Input{
 
     public int getNumPlayers() {
         System.out.print("Enter the number of players: ");
-        return Integer.parseInt(sc.nextLine());
+        return getNumWithinRange(2, 8);
     }
 
     public String getPlayerName(int playerNum) {
@@ -51,11 +51,24 @@ public class TextInput implements Input{
     }
 
     private int getNumWithinRange(int min, int max) {
-        int input = Integer.parseInt(sc.nextLine());
+        boolean error = false;
+        int input = 0;
 
-        while (input < min || input > max) {
-            System.out.println("Invalid input. Enter a number between " + min + " and " + max);
+        try {
             input = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            error = true;
+        }
+
+        while (input < min || input > max || error) {
+            System.out.println("Invalid input. Enter a number between " + min + " and " + max);
+
+            try {
+                input = Integer.parseInt(sc.nextLine());
+                error = false;
+            } catch (NumberFormatException e) {
+                error = true;
+            }
         }
 
         return input;
