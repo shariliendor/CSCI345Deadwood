@@ -1,43 +1,38 @@
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Player {
-    private String name;
+    private final String name;
     private int rank;
     private Room location;
     private Role role;
     private HashMap<String, Integer> assets;
-
-    // make into a hashmap
-    private static String[] actions = {"upgrade", "move", "take role", "act", "rehearse"};
-
-    // make a static list of hashmaps<String, Integer> with rank, credits, and dollars keys
-
     private int points;
 
     public Player(String name, int startRank, int startCredits) {
         this.name = name;
         this.rank = startRank;
+        this.location = Room.getRoom("trailer");
         this.role = null;
         this.points = 0;
-        // init hashmap with dollars and credits
+        this.assets = initAssets(0, startCredits);
     }
 
     public void takeTurn(Controller controller) {
         controller.displayPlayerTurn(this);
-        // get possible actions
-        // while there are actions the player can do
-            // ask user which action to do
-            // do that action
-            // remove actions that the player can't do anymore
+        ArrayList<String> actionsTaken = new ArrayList<String>();
+
+        ArrayList<String> possibleActions = ActionManager.getPossibleActions(this, actionsTaken);
+        while (!possibleActions.isEmpty()) {
+            String actionToTake = controller.selectAction(possibleActions.toArray(new String[0]));
+            ActionManager.executeAction(this, actionToTake, controller);
+            actionsTaken.add(actionToTake);
+            possibleActions = ActionManager.getPossibleActions(this, actionsTaken);
+        }
     }
 
-    private ArrayList<String> getPossibleActions() {
-        return null;
-        // make hashmap action name to canDoAction(), loop through that
-    }
-
-    public void upgrade() {
+    public void upgrade(Controller controller) {
         // show upgrade costs
         // ask which rank to buy (out of possible ones)
     }
@@ -59,7 +54,7 @@ public class Player {
         points -= spent;
     }
 
-    public void act() {
+    public void act(Controller controller) {
         //calculate acting score
         //compare to budget
         //give rewards if succesfull based off of on or off card
@@ -69,7 +64,7 @@ public class Player {
         return role != null;
     }
 
-    public void rehearse() {
+    public void rehearse(Controller controller) {
         this.role.addPracticeChip();
     }
 
@@ -78,16 +73,19 @@ public class Player {
         // checks if have role and acting isnt guarunted success
     }
 
-    public void move(Room room) {
-        this.location = room;
+    public void move(Controller controller) {
+        // prompt player for room
+        // move to that room
     }
 
     public boolean canMove() {
         return !hasRole();
     }
 
-    public void takeRole(Role role) {
-        this.role = role;
+    public void takeRole(Controller controller) {
+        // get possible roles
+        // prompt player for role
+        // move to that room
     }
 
     public boolean canTakeRole(Role role) {
@@ -100,6 +98,14 @@ public class Player {
 
     public boolean hasRole() {
         return role != null;
+    }
+
+    private static HashMap<String, Integer> initAssets(int startDollars, int startCredits) {
+        HashMap<String, Integer> assets = new HashMap<>();
+        assets.put("dollar", startDollars);
+        assets.put("credit", startCredits);
+
+        return assets;
     }
 
     public String getName() {

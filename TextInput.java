@@ -44,7 +44,8 @@ public class TextInput implements Input{
             System.out.println("[" + (i+1) + "] " + options[i]);
         }
 
-        int index = getNumWithinRange(1, options.length);
+        // user picked a number from 1 to size, but index needs to be one less
+        int index = getNumWithinRange(1, options.length) - 1;
 
         return options[index];
     }
