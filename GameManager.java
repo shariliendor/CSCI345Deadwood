@@ -1,13 +1,15 @@
 public class GameManager {
     private final Player[] players;
     private final Board board;
+    private final Deck deck;
     private int daysLeft;
     private int currentPlayer;
-    private Controller controller;
+    private final Controller controller;
 
     public GameManager(Player[] players, Board board, Deck deck, Controller controller, int days) {
         this.players = players;
         this.board = board;
+        this.deck = deck;
         this.daysLeft = days;
         currentPlayer = (int) (Math.random() * players.length);
         this.controller = controller;
@@ -20,6 +22,12 @@ public class GameManager {
     }
 
     public void playDay() {
+        dealToSets();
+
+        for (Player player: players) {
+            player.setLocation(board.getTrailer());
+        }
+
         while(board.getScenesToShoot() > 1) {
             nextTurn();
         }
@@ -27,12 +35,14 @@ public class GameManager {
     }
 
     private void dealToSets() {
-        // loop sets
-        // draw a card and set set's card to the card drawn
+        for (Set set: board.getSets()) {
+            set.setCard(deck.draw());
+        }
     }
 
-    public void wrap(Set set) {
+    public void wrap(Set set) {//chester
         // follow rules
+        // loop players to see whos on set
     }
 
     public void nextTurn() {
@@ -41,7 +51,8 @@ public class GameManager {
         currentPlayer %= players.length;
     }
 
-    public Player calcWinner() {
+    public Player calcWinner() {//chester
+        // find player with most points
         return players[0];
     }
 }

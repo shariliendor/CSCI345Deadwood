@@ -21,20 +21,37 @@ public class TextDisplay implements Display {
         System.out.println("It is " + player.getName() + "'s turn.");
     }
 
+    public void displayCurrentRank(Player player) {//james
+
+    }
+
     public void displayPlayerInfo(Player player) {
         System.out.println("Name: " + player.getName());
         System.out.println("Rank: " + player.getRank());
         System.out.println("Points: " + player.getPoints());
-        // print assets
         System.out.println("Location: " + player.getLocation().getName());
 
         if (player.hasRole()) {
             System.out.println("Role" + player.getRole().getName());
         }
 
+        HashMap<String, Integer> assets = player.getAssets();
+        for (String currency: assets.keySet()) {
+            System.out.println(currency + "s: " + assets.get(currency));
+        }
+
+        System.out.println();
     }
 
-    public void displayUpgradeCosts() {
+    public void displayPlayerLocations(Player[] players) {//Chester
+        System.out.println();
+        System.out.println("Player Locations");
+        for (Player player: players) {
+            System.out.println(player.getName() + ": " + player.getLocation().getName());
+        }
+    }
+
+    public void displayUpgradeCosts() {//james
         // loop though upgrade cost hashmap
     }
 
@@ -43,9 +60,11 @@ public class TextDisplay implements Display {
         System.out.println("Neighbors: " + join(room.getNeighbors(), ", "));
     }
 
-    //public void displayGameState(Board board, Player[] players) {}
+    public void displayRoleInfo(Role role) {//james
 
-    public void displayStandings(Player[] players) {
+    }
+
+    public void displayStandings(Player[] players) {//chester
         // loop through players, sort by points
     }
 
@@ -60,8 +79,8 @@ public class TextDisplay implements Display {
         System.out.println("There are " + shotsLeft + " scenes left to shoot.");
     }
 
-    public void displayRehearseOutcome() {
-        System.out.println("You have rehearsed. Acting will now be more likely to succeed.");
+    public void displayRehearseOutcome(Role role, int practiceChips) {
+        System.out.println("You have rehearsed. There are now " + practiceChips + " practice chips on " + role.getName());
     }
 
     public void displayMoveOutcome(Room room) {
@@ -69,7 +88,7 @@ public class TextDisplay implements Display {
     }
 
     // playerEarnings is a list of HashMaps with playerIndex(from gameManager), dollars, credits
-    public void displayWrapOutcome(Set set, HashMap<String, Integer>[] playerEarnings, int scenesLeft) {}
+    public void displayWrapOutcome(Set set, HashMap<String, Integer>[] playerEarnings, int scenesLeft) {}//chester
 
     public void announceWinner(Player player) {
         System.out.println(player.getName() + "wins with " + player.getPoints() + "points!");

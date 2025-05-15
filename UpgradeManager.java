@@ -1,5 +1,6 @@
 public class UpgradeManager {
     private static final int MAX_RANK = 6;
+    // get the lists from upgrades in casting office so no hard coding
     private static final int[] dollarCosts = {0, 4, 10, 18, 28, 40, 55}; // index = rank
     private static final int[] creditCosts = {0, 5, 10, 15, 20, 25, 30};
 

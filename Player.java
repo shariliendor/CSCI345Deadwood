@@ -1,4 +1,3 @@
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,6 +20,7 @@ public class Player {
 
     public void takeTurn(Controller controller) {
         controller.displayPlayerTurn(this);
+        controller.displayPlayerInfo(this);
         ArrayList<String> actionsTaken = new ArrayList<String>();
 
         ArrayList<String> possibleActions = ActionManager.getPossibleActions(this, actionsTaken);
@@ -32,14 +32,20 @@ public class Player {
         }
     }
 
-    public void upgrade(Controller controller) {
+    public void upgrade(Controller controller) {//James
+        // display current rank
         // show upgrade costs
         // ask which rank to buy (out of possible ones)
+        // update points accordingly
+    }
+
+    public boolean canPurchaseRank(int rank, String currency) {//James
+        return false;
     }
 
     public boolean canUpgrade() {
         // Must be in the casting office
-        if (!location.getName().equalsIgnoreCase("casting office")) {
+        if (!location.getName().equalsIgnoreCase("office")) {
             return false;
         }
 
@@ -53,7 +59,6 @@ public class Player {
         }
 
         return false;
-        // if in casting office and can buy at least one rank
     }
 
     public void earn(int earned, String currency) {
@@ -68,35 +73,37 @@ public class Player {
         points -= spent;
     }
 
-    public void act(Controller controller) {
+    public void act(Controller controller) {//James
         //calculate acting score
         //compare to budget
         //give rewards if succesfull based off of on or off card
     }
 
-    public boolean canAct() {
+    public boolean canAct() {//James
         return role != null;
     }
 
     public void rehearse(Controller controller) {
         this.role.addPracticeChip();
+        controller.displayRehearseOutcome();
     }
 
-    public boolean canRehearse() {
+    public boolean canRehearse() {//James
         return false;
         // checks if have role and acting isnt guarunted success
     }
 
-    public void move(Controller controller) {
-        // prompt player for room
-        // move to that room
+    public void move(Controller controller) {//Chester
+        String[] adjRoomNames = location.getNeighbors();
+        location = controller.selectRoom(adjRoomNames);
+        controller.displayMoveOutcome(location);
     }
 
     public boolean canMove() {
         return !hasRole();
     }
 
-    public void takeRole(Controller controller) {
+    public void takeRole(Controller controller) {//james
         // get possible roles
         // prompt player for role
         // move to that room
@@ -106,7 +113,7 @@ public class Player {
         return rank >= role.getLevel();
     }
 
-    public boolean canTakeRole() {return false;
+    public boolean canTakeRole() {return false;//james
     //if on an active set loops through roles with canTakeRole()
     }
 
@@ -142,7 +149,19 @@ public class Player {
         return location;
     }
 
+    public void setLocation(String roomName) {
+        location = Room.getRoom(roomName);
+    }
+
+    public void setLocation(Room room) {
+        location = room;
+    }
+
     public HashMap<String, Integer> getAssets() {
         return assets;
+    }
+
+    public int getCurrency(String currency) {
+        return assets.get(currency);
     }
 }

@@ -26,14 +26,16 @@ public class TextInput implements Input{
         return Room.getRoom(roomName);
     }
 
-    public Role selectRole(String[] roles) {
+    public Role selectRole(String[] roles) {// james
         // figure out how to turn a string into a role
         // maybe cards and sets have roleName hashMaps
         return null;
     }
 
-    public int chooseRank() {
-        // when user inputs a value, check if player can buy rank
+    public int chooseRank() {//james
+        // ask for number between currRank +1 and max rank
+        // validate with player
+        // return rank
         return 0;
     }// give possible ranks param
 

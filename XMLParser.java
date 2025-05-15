@@ -49,16 +49,9 @@ public class XMLParser {
         Room trailer = parseTrailer(boardElement);
         Set[] sets = parseSets(boardElement);
 
-        Room[] rooms = new Room[sets.length + 2];
-        // I'm not exactly sure how arraycopy works, but it was a suggestion and I took it lol
-        // originally it was a for loop copying sets into the beginning of rooms
-        System.arraycopy(sets, 0, rooms, 0, sets.length);
-        rooms[rooms.length - 2] = trailer;
-        rooms[rooms.length - 1] = castingOffice;
-
-        return new Board(rooms, sets, castingOffice);
+        return new Board(trailer, sets, castingOffice);
     }
-    
+
     public CastingOffice parseCastingOffice(Element boardElement) {
         Element officeElement = (Element) boardElement.getElementsByTagName("office").item(0);
 
