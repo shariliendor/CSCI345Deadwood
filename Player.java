@@ -82,35 +82,63 @@ public class Player {
     }
 
     public void act(Controller controller) {
-        if (!(location instanceof Set set)) return;
-        Card card = set.getCard();
-        int budget = card.getBudget();
+        if (!(location instanceof Set)) {
+            controller.displayInvalidInput("You are not on a film set.");
+            return;
+        } 
 
+        Set set = (Set) location;
+        Card card = set.getCard();
+
+        if (role == null || card == null || !set.isActive()) {
+            controller.displayInvalidInput("You cannot act right now.");
+            return;
+        }
+
+        int budget = card.getBudget();
+        int practiceBonus = role.getPracticeChips();
         int roll = 1 + (int)(Math.random() * 6);
-        int total = roll + role.getPracticeChips();
+        int total = roll + practiceBonus;
         boolean success = total >= budget;
+
+        int earned = 0;
+        String currency = "";
 
         if (success) {
             set.removeShotCounter();
-            int shotsLeft = set.getRemainingShots();
-            if (card.getRoles().contains(role)) {
+
+            if (set.isOnCardRole(role)) {
+                // On-card: 2 credits
                 earn(2, "credit");
-                controller.displayActOutcome(true, 2, "credit", shotsLeft);
+                earned = 2;
+                currency = "credit";
             } else {
-                earn(1, "credit");
+                // Off-card: 1 dollar, 1 credit
                 earn(1, "dollar");
-                controller.displayActOutcome(true, 1, "credit", shotsLeft);
+                earn(1, "credit");
+                earned = 1; // for display purposes
+                currency = "dollar + credit";
             }
         } else {
-            int shotsLeft = set.getRemainingShots();
-            if (set.isOnCardRole(role)) {
+            if (!set.isOnCardRole(role)) {
+                // Fail but off-card: 1 dollar
                 earn(1, "dollar");
-                controller.displayActOutcome(false, 1, "dollar", shotsLeft);
-            } else {
-                controller.displayActOutcome(false, 0, "none", shotsLeft);
+                earned = 1;
+                currency = "dollar";
             }
         }
+
+        int shotsLeft = set.getRemainingShots();
+        controller.displayActOutcome(success, earned, currency, shotsLeft);
+
+        // If the set has wrapped, call scene wrap logic (not shown here)
+        if (!set.isActive()) {
+        // Trigger wrap scene – you might already have this logic elsewhere
+            // Example:
+           // SceneManager.wrapScene(set, controller);
+        }
     }
+
 
     public boolean canAct() {
         // Must have a role assigned
