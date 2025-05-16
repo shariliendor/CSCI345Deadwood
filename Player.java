@@ -40,15 +40,69 @@ public class Player {
         return false;
     }
 
-    public void upgrade(Controller controller) {//James
-        // display current rank
-        // show upgrade costs
-        // ask which rank to buy (out of possible ones)
-        // update points accordingly
+    public void upgrade(Controller controller) {
+        // First, ensure player is in the Casting Office
+        if (!location.getName().equalsIgnoreCase("office")) {
+            controller.displayInvalidInput("You must be in the Casting Office to upgrade your rank.");
+            return;
+        }
+
+        // Display current rank and upgrade costs
+        controller.displayUpdatedRank(rank);
+        controller.displayUpgradeCosts();
+
+        // Determine possible ranks to upgrade to (above current rank)
+        int maxRank = UpgradeManager.getMaxRank();
+        ArrayList<Integer> possibleRanks = new ArrayList<>();
+        for (int r = rank + 1; r <= maxRank; r++) {
+            if (canPurchaseRank(r, "dollar") || canPurchaseRank(r, "credit")) {
+                possibleRanks.add(r);
+            }
+        }
+
+        // If no ranks available to upgrade
+        if (possibleRanks.isEmpty()) {
+            controller.displayInvalidInput("You cannot afford any rank upgrades at this time.");
+            return;
+        }
+
+        // Ask player which rank they want to buy
+        String[] options = possibleRanks.stream()
+                                   .map(String::valueOf)
+                                   .toArray(String[]::new);
+        int chosenRank = Integer.parseInt(controller.selectAction(options));
+
+        // Check if player can afford chosen rank with dollars or credits
+        int dollarCost = UpgradeManager.getDollarCost(chosenRank);
+        int creditCost = UpgradeManager.getCreditCost(chosenRank);
+
+        boolean purchased = false;
+        if (canPurchaseRank(chosenRank, "dollar") && assets.get("dollar") >= dollarCost) {
+            spend(dollarCost, "dollar");
+            purchased = true;
+        } else if (canPurchaseRank(chosenRank, "credit") && assets.get("credit") >= creditCost) {
+            spend(creditCost, "credit");
+            purchased = true;
+        }
+
+        if (purchased) {
+            rank = chosenRank;
+            controller.displayUpdatedRank(rank);
+        } else {
+            controller.displayInvalidInput("You do not have enough currency to upgrade to that rank.");
+        }
     }
 
-    public boolean canPurchaseRank(int rank, String currency) {//James
-        return false;
+
+    public boolean canPurchaseRank(int desiredRank, String currency) {
+        if (currency.equalsIgnoreCase("dollar")) {
+            int cost = UpgradeManager.getDollarCost(desiredRank);
+            return assets.getOrDefault("dollar", 0) >= cost;
+        } else if (currency.equalsIgnoreCase("credit")) {
+            int cost = UpgradeManager.getCreditCost(desiredRank);
+            return assets.getOrDefault("credit", 0) >= cost;
+        }
+        return false; // Invalid currency input
     }
 
     public boolean canUpgrade() {
