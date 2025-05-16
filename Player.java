@@ -170,7 +170,7 @@ public class Player {
                 // Off-card: 1 dollar, 1 credit
                 earn(1, "dollar");
                 earn(1, "credit");
-                earned = 1; // for display purposes
+                earned = 1;
                 currency = "dollar + credit";
             }
         } else {
@@ -184,13 +184,6 @@ public class Player {
 
         int shotsLeft = set.getRemainingShots();
         controller.displayActOutcome(success, earned, currency, shotsLeft);
-
-        // If the set has wrapped, call scene wrap logic (not shown here)
-        if (!set.isActive()) {
-        // Trigger wrap scene – you might already have this logic elsewhere
-            // Example:
-           // SceneManager.wrapScene(set, controller);
-        }
     }
 
 
