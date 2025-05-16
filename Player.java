@@ -112,8 +112,23 @@ public class Player {
         }
     }
 
-    public boolean canAct() {//James
-        return role != null;
+    public boolean canAct() {
+        // Must have a role assigned
+        if (role == null) {
+            return false;
+        }
+
+        // Must be on a Set with an active scene
+        if (!(location instanceof Set)) {
+            return false;
+        }
+
+        Set set = (Set) location;
+        if (!set.isActive() || set.getCard() == null) {
+            return false;
+        }
+
+        return true;
     }
 
     public void rehearse(Controller controller) {
@@ -121,10 +136,28 @@ public class Player {
         controller.displayRehearseOutcome(role);
     }
 
-    public boolean canRehearse() {//James
-        return false;
-        // checks if have role and acting isnt guarunted success
+    public boolean canRehearse() {
+        // Must have a role assigned
+        if (role == null) {
+            return false;
+        }
+
+        // Must be on a Set with an active scene
+        if (!(location instanceof Set)) {
+            return false;
+        }
+
+        Set set = (Set) location;
+        Card card = set.getCard();
+        if (!set.isActive() || card == null) {
+            return false;
+        }
+
+        // Can't rehearse if already guaranteed success
+        int total = role.getPracticeChips() + 1; // rehearsing would add one
+        return total < card.getBudget();
     }
+
 
     public void move(Controller controller) {//Chester
         String[] adjRoomNames = location.getNeighbors();
