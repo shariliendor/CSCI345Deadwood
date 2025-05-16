@@ -81,10 +81,35 @@ public class Player {
         points -= spent;
     }
 
-    public void act(Controller controller) {//James
-        //calculate acting score
-        //compare to budget
-        //give rewards if succesfull based off of on or off card
+    public void act(Controller controller) {
+        if (!(location instanceof Set set)) return;
+        Card card = set.getCard();
+        int budget = card.getBudget();
+
+        int roll = 1 + (int)(Math.random() * 6);
+        int total = roll + role.getPracticeChips();
+        boolean success = total >= budget;
+
+        if (success) {
+            set.removeShotCounter();
+            int shotsLeft = set.getRemainingShots();
+            if (card.getRoles().contains(role)) {
+                earn(2, "credit");
+                controller.displayActOutcome(true, 2, "credit", shotsLeft);
+            } else {
+                earn(1, "credit");
+                earn(1, "dollar");
+                controller.displayActOutcome(true, 1, "credit", shotsLeft);
+            }
+        } else {
+            int shotsLeft = set.getRemainingShots();
+            if (set.isOnCardRole(role)) {
+                earn(1, "dollar");
+                controller.displayActOutcome(false, 1, "dollar", shotsLeft);
+            } else {
+                controller.displayActOutcome(false, 0, "none", shotsLeft);
+            }
+        }
     }
 
     public boolean canAct() {//James

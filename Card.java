@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.List;
+
 public class Card {
     private final Role[] roles;
     private final String name;
@@ -14,10 +17,11 @@ public class Card {
         this.roles = roles;
     }
 
-    public Role[] getRoles() {
-        return this.roles;
+    public List<Role> getRoles() {
+        return Arrays.asList(this.roles);
     }
 
+    
     public int getBudget() {
         return budget;
     }

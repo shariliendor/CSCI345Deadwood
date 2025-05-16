@@ -40,4 +40,19 @@ public class Set extends Room{
     public Role[] getExtraRoles() {
         return extraRoles;
     }
+
+    public int getRemainingShots() {
+        return shotsToComplete - shotCounters;
+    }
+
+    public int getShotCounters() {
+        return shotCounters;
+    }
+
+    public boolean isOnCardRole(Role role) {
+        for (Role r : card.getRoles()) {
+            if (r == role) return true;
+        }
+        return false;
+    }
 }
