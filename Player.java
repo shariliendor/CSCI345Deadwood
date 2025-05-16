@@ -121,9 +121,37 @@ public class Player {
         return rank >= role.getLevel();
     }
 
-    public boolean canTakeRole() {return false;//james
-    //if on an active set loops through roles with canTakeRole()
+    public boolean canTakeRole() {
+    // Player must not already have a role
+    if (hasRole()) {
+        return false;
     }
+
+    // The location must be a Set with an active scene
+    if (location instanceof Set) {
+        Set set = (Set) location;
+
+        if (!set.isActive() || set.getCard() == null) {
+            return false;
+        }
+
+        // Check on-card roles from the Card
+        for (Role role : set.getCard().getRoles()) {
+            if (!role.isTaken() && canTakeRole(role)) {
+                return true;
+            }
+        }
+
+        // Check off-card roles from the Set
+        for (Role role : set.getExtraRoles()) {
+            if (!role.isTaken() && canTakeRole(role)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
     public boolean hasRole() {
         return role != null;

@@ -41,4 +41,21 @@ public class Role {
     public Area getArea() {
         return area;
     }
+    private Player assignedPlayer;
+
+    public void setPlayer(Player player) {
+        this.assignedPlayer = player;
+    }
+
+    public boolean isTaken() {
+        return this.assignedPlayer != null;
+    }
+
+    public void clearPlayer() {
+        this.assignedPlayer = null;
+    }
+
+    public Player getPlayer() {
+        return assignedPlayer;
+    }
 }
