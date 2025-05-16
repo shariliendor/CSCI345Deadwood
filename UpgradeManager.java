@@ -1,18 +1,39 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class UpgradeManager {
-    private static final int MAX_RANK = 6;
-    // get the lists from upgrades in casting office so no hard coding
-    private static final int[] dollarCosts = {0, 4, 10, 18, 28, 40, 55}; // index = rank
-    private static final int[] creditCosts = {0, 5, 10, 15, 20, 25, 30};
+    private static int maxRank = 0;
+    private static final Map<String, Integer> dollarCosts = new HashMap<>();
+    private static final Map<String, Integer> creditCosts = new HashMap<>();
+
+    // Call this once from game setup or CastingOffice constructor
+    public static void initialize(Upgrade[] upgrades) {
+        for (Upgrade upgrade : upgrades) {
+            int rank = upgrade.getRank();
+            String currency = upgrade.getCurrency().toLowerCase();
+            int amount = upgrade.getAmount();
+
+            if (rank > maxRank) {
+                maxRank = rank;
+            }
+
+            if (currency.equals("dollar")) {
+                dollarCosts.put(String.valueOf(rank), amount);
+            } else if (currency.equals("credit")) {
+                creditCosts.put(String.valueOf(rank), amount);
+            }
+        }
+    }
 
     public static int getDollarCost(int rank) {
-        return dollarCosts[rank];
+        return dollarCosts.getOrDefault(String.valueOf(rank), -1);
     }
 
     public static int getCreditCost(int rank) {
-        return creditCosts[rank];
+        return creditCosts.getOrDefault(String.valueOf(rank), -1);
     }
 
     public static int getMaxRank() {
-        return MAX_RANK;
+        return maxRank;
     }
 }
