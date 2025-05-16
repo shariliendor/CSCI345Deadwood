@@ -18,18 +18,26 @@ public class Player {
         this.assets = initAssets(0, startCredits);
     }
 
-    public void takeTurn(Controller controller) {
+    // returns whether the game was ended
+    public boolean takeTurn(Controller controller) {
         controller.displayPlayerTurn(this);
         controller.displayPlayerInfo(this);
-        ArrayList<String> actionsTaken = new ArrayList<String>();
+        ArrayList<String> actionsTaken = new ArrayList<>();
 
         ArrayList<String> possibleActions = ActionManager.getPossibleActions(this, actionsTaken);
         while (!possibleActions.isEmpty()) {
             String actionToTake = controller.selectAction(possibleActions.toArray(new String[0]));
+
+            if (actionToTake.equals("end game")) {
+                return true;
+            }
+
             ActionManager.executeAction(this, actionToTake, controller);
             actionsTaken.add(actionToTake);
             possibleActions = ActionManager.getPossibleActions(this, actionsTaken);
         }
+
+        return false;
     }
 
     public void upgrade(Controller controller) {//James
@@ -85,7 +93,7 @@ public class Player {
 
     public void rehearse(Controller controller) {
         this.role.addPracticeChip();
-        controller.displayRehearseOutcome();
+        controller.displayRehearseOutcome(role);
     }
 
     public boolean canRehearse() {//James
@@ -119,6 +127,18 @@ public class Player {
 
     public boolean hasRole() {
         return role != null;
+    }
+
+    public boolean canEndTurn() {
+        return true;
+    }
+
+    public void endTurn(Controller controller) {
+        // don't delete this method, it gets used in ActionManager
+    }
+
+    public boolean canEndGame() {
+        return true;
     }
 
     private static HashMap<String, Integer> initAssets(int startDollars, int startCredits) {

@@ -1,14 +1,12 @@
+import java.util.HashMap;
+
 public class Controller {
-    private Input input;
-    private Display display;
+    private final Input input;
+    private final Display display;
 
     public Controller(Input input, Display display) {
         this.input = input;
         this.display = display;
-    }
-
-    public void displayMessage(String message) {
-        display.displayMessage(message);
     }
 
     public void displayWelcome() {
@@ -31,35 +29,44 @@ public class Controller {
         display.displayRoomInfo(room);
     }
 
-    public void displayGameState(Board board, Player[] players) {
-        display.displayGameState(board, players);
+    public void displayRoleInfo(Role role) {
+        display.displayRoleInfo(role);
     }
 
     public void displayStandings(Player[] players) {
         display.displayStandings(players);
     }
 
+    public void displayPlayerLocations(Player[] players) {
+        display.displayPlayerLocations(players);
+    }
+
     public void displayUpdatedRank(int newRank) {
         display.displayUpdatedRank(newRank);
     }
 
-    // uml says weird parameters, james if you remember what the parameters should be, please change this lol
-    public void displayActOutcome(boolean success, int dollarsEarned, int creditsEarned, int shotsLeft) {
-        display.displayActOutcome(success, dollarsEarned, creditsEarned, shotsLeft);
+    public void displayUpgradeCosts() {
+        display.displayUpgradeCosts();
     }
 
-    public void displayRehearseOutcome() {
-        display.displayRehearseOutcome();
+    public void displayRehearseOutcome(Role role) {
+        display.displayRehearseOutcome(role);
+    }
+
+    public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {
+        display.displayActOutcome(success, currencyEarned, currency, shotsLeft);
     }
 
     public void displayMoveOutcome(Room room) {
         display.displayMoveOutcome(room);
     }
 
-    // were gonna have to come up with something else for the winnings because
-    // java doesn't do tuples and we cant have multiple data types in one list :(
-    public void displayWrapOutcome(Set set, int scenesLeft) {
-        display.displayWrapOutcome(set, scenesLeft);
+    public void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft) {
+        display.displayWrapOutcome(set, playerEarnings, scenesLeft);
+    }
+
+    public void displayEndGame(Player[] players) {
+        display.displayGameEnd(players);
     }
 
     public void announceWinner(Player player) {
@@ -89,9 +96,5 @@ public class Controller {
 
     public int chooseRank() {
         return input.chooseRank();
-    }
-
-    public String selectOption(String[] options) {
-        return input.selectOption(options);
     }
 }

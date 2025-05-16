@@ -79,8 +79,8 @@ public class TextDisplay implements Display {
         System.out.println("There are " + shotsLeft + " scenes left to shoot.");
     }
 
-    public void displayRehearseOutcome(Role role, int practiceChips) {
-        System.out.println("You have rehearsed. There are now " + practiceChips + " practice chips on " + role.getName());
+    public void displayRehearseOutcome(Role role) {
+        System.out.println("You have rehearsed. There are now " + role.getPracticeChips() + " practice chips on " + role.getName());
     }
 
     public void displayMoveOutcome(Room room) {
@@ -88,10 +88,15 @@ public class TextDisplay implements Display {
     }
 
     // playerEarnings is a list of HashMaps with playerIndex(from gameManager), dollars, credits
-    public void displayWrapOutcome(Set set, HashMap<String, Integer>[] playerEarnings, int scenesLeft) {}//chester
+    public void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft) {}//chester
 
     public void announceWinner(Player player) {
         System.out.println(player.getName() + "wins with " + player.getPoints() + "points!");
+    }
+
+    public void displayGameEnd(Player[] players) {
+        System.out.println("Game ended. Final Standings: ");
+        displayStandings(players);
     }
 
     public String join(String[] arr, String connector) {

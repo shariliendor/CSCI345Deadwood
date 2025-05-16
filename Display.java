@@ -1,32 +1,35 @@
+import java.util.HashMap;
+
 public interface Display {
-    default void displayMessage(String message) {}
+    void displayWelcome();
 
-    default void displayWelcome() {}
+    void displayInvalidInput(String message);
 
-    default void displayInvalidInput(String message) {}
+    void displayPlayerTurn(Player player);
 
-    default void displayPlayerTurn(Player player) {}
+    void displayPlayerInfo(Player player);
 
-    default void displayPlayerInfo(Player player) {}
+    void displayRoomInfo(Room room);
 
-    default void displayRoomInfo(Room room) {}
+    void displayRoleInfo(Role role);
 
-    default void displayGameState(Board board, Player[] players) {}
+    void displayStandings(Player[] players);
 
-    default void displayStandings(Player[] players) {}
+    void displayPlayerLocations(Player[] players);
 
-    default void displayUpdatedRank(int newRank) {}
+    void displayUpdatedRank(int newRank);
 
-    // uml says weird parameters, james if you remember what the parameters should be, please change this lol
-    default void displayActOutcome(boolean success, int dollarsEarned, int creditsEarned, int shotsLeft) {}
+    void displayUpgradeCosts();
 
-    default void displayRehearseOutcome() {}
+    void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft);
 
-    default void displayMoveOutcome(Room room) {}
+    void displayRehearseOutcome(Role role);
 
-    // were gonna have to come up with something else for the winnings because
-    // java doesn't do tuples and we cant have multiple data types in one list :(
-    default void displayWrapOutcome(Set set, int scenesLeft) {}
+    void displayMoveOutcome(Room room);
 
-    default void announceWinner(Player player) {}
+    void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft);
+
+    void announceWinner(Player player);
+
+    void displayGameEnd(Player[] players);
 }

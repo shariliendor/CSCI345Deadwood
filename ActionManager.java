@@ -1,24 +1,27 @@
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ActionManager {
-    private static final String[] actions = {"upgrade", "move", "take role", "act", "rehearse"};
+    private static final String[] actions = {"upgrade", "move", "take role", "act", "rehearse", "end turn", "end game"};
     private static final HashMap<String, Method> actionRelevance = populateActionRelevance();
     private static final HashMap<String, Method> actionExecution = populateActionExecution();
     private static final String[] turnEndingActions = {"act", "rehearse"};
+    // will probably change
 
 
     private static HashMap<String, Method> populateActionExecution() {
         try {
-            HashMap<String, Method> actionRelevance = new HashMap<>();
-            actionRelevance.put("upgrade", Player.class.getMethod("upgrade", Controller.class));
-            actionRelevance.put("move", Player.class.getMethod("move", Controller.class));
-            actionRelevance.put("take role", Player.class.getMethod("takeRole", Controller.class));
-            actionRelevance.put("act", Player.class.getMethod("act", Controller.class));
-            actionRelevance.put("rehearse", Player.class.getMethod("rehearse", Controller.class));
+            HashMap<String, Method> actionExecution = new HashMap<>();
+            actionExecution.put("upgrade", Player.class.getMethod("upgrade", Controller.class));
+            actionExecution.put("move", Player.class.getMethod("move", Controller.class));
+            actionExecution.put("take role", Player.class.getMethod("takeRole", Controller.class));
+            actionExecution.put("act", Player.class.getMethod("act", Controller.class));
+            actionExecution.put("rehearse", Player.class.getMethod("rehearse", Controller.class));
+            actionExecution.put("end turn", Player.class.getMethod("endTurn", Controller.class));
 
-            return actionRelevance;
+            return actionExecution;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,6 +36,8 @@ public class ActionManager {
             actionRelevance.put("take role", Player.class.getMethod("canTakeRole"));
             actionRelevance.put("act", Player.class.getMethod("canAct"));
             actionRelevance.put("rehearse", Player.class.getMethod("canRehearse"));
+            actionRelevance.put("end turn", Player.class.getMethod("canEndTurn"));
+            actionRelevance.put("end game", Player.class.getMethod("canEndGame"));
 
             return actionRelevance;
         } catch (Exception e) {
@@ -42,10 +47,14 @@ public class ActionManager {
     }
 
     public static ArrayList<String> getPossibleActions(Player player, ArrayList<String> actionsTaken) {
+        if (actionsTaken.contains("end turn")) {
+            return new ArrayList<String>();
+        }
+
         for (String action: actionsTaken) {
             if (actionEndsTurn(action)) {
-                // the action ends the turn, so no more actions available
-                return new ArrayList<String>();
+                // the action ends the turn, only end turn and end game are available
+                return new ArrayList<>(List.of("end turn", "end game"));
             }
         }
 
@@ -79,21 +88,6 @@ public class ActionManager {
         }
 
         return false;
-    }
-
-    public static ArrayList<String> getPossibleActions(ArrayList<String> prevPossActions, String executedAction) {
-        ArrayList<String> possibleActions = prevPossActions;
-
-        for (String turnEndingAction: turnEndingActions) {
-            // if the executed action should end the turn, there are no more possible actions
-            if (turnEndingAction.equals(executedAction)) {
-                return new ArrayList<String>();
-            }
-        }
-
-        possibleActions.remove(executedAction);
-
-        return possibleActions;
     }
 
     public static void executeAction(Player player, String action, Controller controller) {

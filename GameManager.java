@@ -16,12 +16,16 @@ public class GameManager {
     }
 
     public void playGame() {
-        while (daysLeft > 0) {
-            playDay();
+        boolean gameEnded = false;
+
+        while (daysLeft > 0 && !gameEnded) {
+            gameEnded = playDay();
         }
+
+        controller.displayEndGame(players);
     }
 
-    public void playDay() {
+    public boolean playDay() {
         dealToSets();
 
         for (Player player: players) {
@@ -29,9 +33,13 @@ public class GameManager {
         }
 
         while(board.getScenesToShoot() > 1) {
-            nextTurn();
+            if (nextTurn()) {
+                return true;
+            }
         }
         daysLeft --;
+
+        return false;
     }
 
     private void dealToSets() {
@@ -45,10 +53,13 @@ public class GameManager {
         // loop players to see whos on set
     }
 
-    public void nextTurn() {
-        players[currentPlayer].takeTurn(controller);
+    // returns whether the game was ended
+    public boolean nextTurn() {
+        boolean gameEnded = players[currentPlayer].takeTurn(controller);
         currentPlayer ++;
         currentPlayer %= players.length;
+
+        return gameEnded;
     }
 
     public Player calcWinner() {//chester
