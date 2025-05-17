@@ -38,7 +38,17 @@ public class Board {
             set.setActive(true);
         }
     }
-    
+
+    public boolean isSet(Room room) {
+        for (Set set: sets) {
+            if (set.equals(room)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public Set[] getSets() {
         return sets;
     }
