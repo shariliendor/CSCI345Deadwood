@@ -119,6 +119,8 @@ public class TextDisplay implements Display {
     }
 
     public void displayTakeRoleOutcome(Role role) {
-        System.out.println("You have taken the role: " + role.getName() + " (Level " + role.getLevel() + ")");
+        String takenType = (role.getArea() != null) ? "Off-card role" : "On-card role"; // Assuming off-card roles have area info
+        System.out.println("You have taken the " + takenType + ": \"" + role.getName() + "\" (Level " + role.getLevel() + ")");
+        System.out.println("Line: \"" + role.getLine() + "\"");
     }
 }
