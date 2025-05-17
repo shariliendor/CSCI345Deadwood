@@ -4,7 +4,7 @@ public class Role {
     private final String line;
     private final Area area;
     private int practiceChips;
-    // and whatever other attributes we get from the xml file
+    private Player assignedPlayer;
 
     public Role(String name, int level, String line, Area area) {
         this.name = name;
@@ -41,7 +41,7 @@ public class Role {
     public Area getArea() {
         return area;
     }
-    private Player assignedPlayer;
+
 
     public void setPlayer(Player player) {
         this.assignedPlayer = player;

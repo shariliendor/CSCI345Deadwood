@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameManager {
     private final Player[] players;
     private final Board board;
@@ -22,7 +25,7 @@ public class GameManager {
             gameEnded = playDay();
         }
 
-        controller.displayEndGame(players);
+        controller.displayEndGame(getStandings());
     }
 
     public boolean playDay() {
@@ -49,8 +52,10 @@ public class GameManager {
     }
 
     public void wrap(Set set) {//chester
-        // follow rules
-        // loop players to see whos on set
+        // get players on card
+        // get players off card
+
+        // give out rewards
     }
 
     // returns whether the game was ended
@@ -62,8 +67,27 @@ public class GameManager {
         return gameEnded;
     }
 
-    public Player calcWinner() {//chester
-        // find player with most points
-        return players[0];
+    public Player calcWinner() {
+        return getStandings()[0];
+    }
+
+    public Player[] getStandings() {
+        ArrayList<Player> toBeSorted = new ArrayList<>(List.of(players));
+        Player[] standings = new Player[players.length];
+
+        for (int i = 0; i < players.length; i++) {
+            Player highScorePlayer = toBeSorted.get(0);
+
+            for (Player player : toBeSorted) {
+                if (player.getPoints() > highScorePlayer.getPoints()) {
+                    highScorePlayer = player;
+                }
+            }
+
+            standings[i] = highScorePlayer;
+            toBeSorted.remove(highScorePlayer);
+        }
+
+        return standings;
     }
 }

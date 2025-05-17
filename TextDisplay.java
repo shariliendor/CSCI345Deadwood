@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class TextDisplay implements Display {
     public TextDisplay() {
@@ -64,8 +66,10 @@ public class TextDisplay implements Display {
 
     }
 
-    public void displayStandings(Player[] players) {//chester
-        // loop through players, sort by points
+    public void displayStandings(Player[] players) {
+        for (int i = 0; i < players.length; i++) {
+            System.out.println((i + 1) + ": " + players[i].getName() + " (" + players[i].getPoints() + " points)");
+        }
     }
 
     public void displayUpdatedRank(int newRank) {
@@ -75,8 +79,14 @@ public class TextDisplay implements Display {
     public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {
         if (success) System.out.println("Success!");
         else System.out.println("Failure...");
-        System.out.println("You earned " + currencyEarned + " " + currency + "(s).");
-        System.out.println("There are " + shotsLeft + " scenes left to shoot.");
+
+        if (currencyEarned > 0) {
+            System.out.println("You earned " + currencyEarned + " " + currency + "(s).");
+        } else {
+            System.out.println("You didn't earn anything :(");
+        }
+
+        System.out.println("There are " + shotsLeft + " scenes left to shoot on this set.");
     }
 
     public void displayRehearseOutcome(Role role) {
@@ -91,12 +101,14 @@ public class TextDisplay implements Display {
     public void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft) {}//chester
 
     public void announceWinner(Player player) {
-        System.out.println(player.getName() + "wins with " + player.getPoints() + "points!");
+        System.out.println(player.getName() + " wins with " + player.getPoints() + " points!");
     }
 
-    public void displayGameEnd(Player[] players) {
+    public void displayGameEnd(Player[] standings) {
         System.out.println("Game ended. Final Standings: ");
-        displayStandings(players);
+        displayStandings(standings);
+        System.out.println();
+        announceWinner(standings[0]);
     }
 
     public String join(String[] arr, String connector) {
