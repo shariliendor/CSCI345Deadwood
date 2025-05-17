@@ -3,6 +3,6 @@ public interface Input {
     String getPlayerName(int playerNum);
     String selectAction(String[] action);
     Room selectRoom(String[] room);
-    Role selectRole(String[] role);
+    Role selectRole(Role[] roles);
     int chooseRank();
 }
