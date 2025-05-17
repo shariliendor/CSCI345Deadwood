@@ -16,11 +16,12 @@ public class Board {
 
     }
 
-    public int getScenesToShoot() {
+    public int getSetsToShoot() {
         int activeSets = 0;
         for (Set set: sets) {
-            if (set.isActive())
+            if (set.isActive()) {
                 activeSets++;
+            }
         }
 
         return activeSets;
@@ -30,6 +31,22 @@ public class Board {
         for (Set set: sets) {
             set.resetShotCounters();
         }
+    }
+
+    public void activateSets() {
+        for (Set set: sets) {
+            set.setActive(true);
+        }
+    }
+
+    public boolean isSet(Room room) {
+        for (Set set: sets) {
+            if (set.equals(room)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Set[] getSets() {
@@ -43,4 +60,6 @@ public class Board {
     public CastingOffice getCastingOffice() {
         return this.castingOffice;
     }
+
+
 }

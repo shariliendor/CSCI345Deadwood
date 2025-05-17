@@ -7,8 +7,7 @@ public class ActionManager {
     private static final String[] actions = {"upgrade", "move", "take role", "act", "rehearse", "end turn", "end game"};
     private static final HashMap<String, Method> actionRelevance = populateActionRelevance();
     private static final HashMap<String, Method> actionExecution = populateActionExecution();
-    private static final String[] turnEndingActions = {"act", "rehearse"};
-    // will probably change
+    private static final String[] turnEndingActions = {"act", "rehearse", "take role"};
 
 
     private static HashMap<String, Method> populateActionExecution() {
