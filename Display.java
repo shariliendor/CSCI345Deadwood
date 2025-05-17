@@ -27,7 +27,7 @@ public interface Display {
 
     void displayMoveOutcome(Room room);
 
-    void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft);
+    void displayWrapOutcome(Set set, HashMap<Player, Integer> playerEarnings, int scenesLeft);
 
     void announceWinner(Player player);
 

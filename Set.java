@@ -4,6 +4,7 @@ public class Set extends Room{
     private int shotCounters;
     private Card card;
     private final Role[] extraRoles;
+    private boolean active;
 
     public Set(String name, String[] neighbors, Area area, Area[] shotCounterAreas, Role[] extraRoles) {
         super(name, neighbors, area);
@@ -11,10 +12,17 @@ public class Set extends Room{
         this.shotCounterAreas = shotCounterAreas;
         this.extraRoles = extraRoles;
         this.shotCounters = 0;
+        this.active = true;
     }
 
-    public boolean isActive() {
-        return !(shotCounters == shotsToComplete);
+    public void clearRoles() {
+        for (Role role: extraRoles) {
+            role.clearPlayer();
+        }
+
+        for (Role role: card.getRoles()) {
+            role.clearPlayer();
+        }
     }
 
     public void removeShotCounter() {
@@ -27,6 +35,14 @@ public class Set extends Room{
 
     public void setCard(Card card) {
         this.card = card;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean b) {
+        active = b;
     }
 
     public Card getCard() {

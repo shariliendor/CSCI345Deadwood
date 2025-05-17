@@ -16,7 +16,7 @@ public class Board {
 
     }
 
-    public int getScenesToShoot() {
+    public int getSetsToShoot() {
         int activeSets = 0;
         for (Set set: sets) {
             if (set.isActive())
@@ -24,6 +24,12 @@ public class Board {
         }
 
         return activeSets;
+    }
+
+    public void activateSets() {
+        for (Set set: sets) {
+            set.setActive(true);
+        }
     }
 
     public void resetShotMarkers() {

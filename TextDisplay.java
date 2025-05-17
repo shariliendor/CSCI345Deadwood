@@ -34,7 +34,9 @@ public class TextDisplay implements Display {
         System.out.println("Location: " + player.getLocation().getName());
 
         if (player.hasRole()) {
-            System.out.println("Role" + player.getRole().getName());
+            System.out.println("Role: " + player.getRole().getName());
+        } else {
+            System.out.println("Role: None");
         }
 
         HashMap<String, Integer> assets = player.getAssets();
@@ -106,7 +108,17 @@ public class TextDisplay implements Display {
     }
 
     // playerEarnings is a list of HashMaps with playerIndex(from gameManager), dollars, credits
-    public void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft) {}//chester
+    public void displayWrapOutcome(Set set, HashMap<Player, Integer> playerEarnings, int scenesLeft) {
+        System.out.println();
+        System.out.println(set.getName() + " has been wrapped!");
+
+        for (Player player: playerEarnings.keySet()) {
+            System.out.println(player.getName() + " earned " + playerEarnings.get(player) + " dollars.");
+        }
+
+        System.out.println();
+        System.out.println("There are " + scenesLeft + " sets left to shoot.");
+    }
 
     public void announceWinner(Player player) {
         System.out.println(player.getName() + " wins with " + player.getPoints() + " points!");

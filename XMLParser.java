@@ -82,7 +82,7 @@ public class XMLParser {
             String[] neighbors = parseNeighbors(setElement);
             Area area = parseArea(setElement);
             Area[] shotCounterAreas = parseShotCounterAreas(setElement);
-            Role[] extraRoles = parseRoles(setElement);
+            Role[] extraRoles = parseExtraRoles(setElement);
 
             sets[i] = new Set(name, neighbors, area, shotCounterAreas, extraRoles);
         }
@@ -124,11 +124,15 @@ public class XMLParser {
         return upgrades;
     }
 
-    private Role[] parseRoles(Element element) {
+    private Role[] parseExtraRoles(Element element) {
         Element partsElement = (Element) element.getElementsByTagName("parts").item(0);
         if (partsElement == null) return new Role[0];
 
-        NodeList partNodes = partsElement.getElementsByTagName("part");
+        return parseRoles(partsElement);
+    }
+
+    private Role[] parseRoles(Element parent) {
+        NodeList partNodes = parent.getElementsByTagName("part");
         Role[] roles = new Role[partNodes.getLength()];
 
         for (int i = 0; i < roles.length; i++) {

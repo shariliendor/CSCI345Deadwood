@@ -272,17 +272,7 @@ public class Player {
             return;
         }
 
-        // Convert roles to displayable strings
-        String[] roleNames = availableRoles.stream()
-            .map(Role::getName)
-            .toArray(String[]::new);
-
-        // Ask player to choose a role
-        String selectedRoleName = controller.selectAction(roleNames);
-        Role chosenRole = availableRoles.stream()
-            .filter(r -> r.getName().equals(selectedRoleName))
-            .findFirst()
-            .orElse(null);
+        Role chosenRole = controller.selectRole(availableRoles.toArray(new Role[0]));
 
         if (chosenRole != null) {
             chosenRole.setPlayer(this);
@@ -331,6 +321,10 @@ public class Player {
 
     public boolean hasRole() {
         return role != null;
+    }
+
+    public void clearRole() {
+        role = null;
     }
 
     public boolean canEndTurn() {

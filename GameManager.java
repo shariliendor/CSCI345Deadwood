@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GameManager {
     private final Player[] players;
@@ -20,6 +19,7 @@ public class GameManager {
 
     public void playGame() {
         boolean gameEnded = false;
+        deck.shuffle();
 
         while (daysLeft > 0 && !gameEnded) {
             gameEnded = playDay();
@@ -30,15 +30,23 @@ public class GameManager {
 
     public boolean playDay() {
         dealToSets();
+        board.resetShotMarkers();
+        board.activateSets();
 
         for (Player player: players) {
             player.setLocation(board.getTrailer());
         }
 
-        while(board.getScenesToShoot() > 1) {
-            if (nextTurn()) {
-                return true;
+        while(board.getSetsToShoot() > 1) {
+            boolean endGame = nextTurn();
+
+            for (Set set : board.getSets()) {
+                if (set.isActive() && set.getRemainingShots() == 0) {
+                    wrap(set);
+                }
             }
+
+            if (endGame) return true;
         }
         daysLeft --;
 
@@ -47,15 +55,70 @@ public class GameManager {
 
     private void dealToSets() {
         for (Set set: board.getSets()) {
+            Card card = deck.draw();
             set.setCard(deck.draw());
         }
     }
 
     public void wrap(Set set) {//chester
-        // get players on card
-        // get players off card
+        ArrayList<Player> playersOnCard = getPlayersOnCard(set);
+        ArrayList<Player> playersOffCard = getPlayersOffCard(set);
+        HashMap<Player, Integer> playerEarnings= new HashMap<>();
+
+        distributeOnCardBonuses(set, playersOnCard, playerEarnings);
+
+        // off card players get dollar bonuses equal to the level of their role
+        for (Player player : playersOffCard) {
+            int bonus = player.getRole().getLevel();
+            player.earn(bonus, "dollar");
+            playerEarnings.put(player, bonus);
+        }
+
+        // display outcome
+        controller.displayWrapOutcome(set, playerEarnings, board.getSetsToShoot());
+
+        // clear roles and take players off roles
+        set.clearRoles();
+        set.setActive(false);
+        clearPlayerRoles(playersOffCard);
+        clearPlayerRoles(playersOnCard);
+    }
+
+    private void distributeOnCardBonuses(Set set, ArrayList<Player> playersOnCard, HashMap<Player, Integer> playerEarnings) {
+//        if (playersOnCard.isEmpty()) {
+//            return;
+//        }
+
+        // on card players get dollar bonuses based on rolling dice
+        int[] diceRolls = new int[set.getCard().getBudget()];
+        for (int i = 0; i < set.getCard().getBudget(); i++) {
+            diceRolls[i] = (int) (Math.random() * 6) + 1;
+        }
+        Arrays.sort(diceRolls);
+        // sorted in ascending order, need to reverse
+        for (int i = 0; i < diceRolls.length / 2; i++) {
+            int temp = diceRolls[i];
+            diceRolls[i] = diceRolls[diceRolls.length - i - 1];
+            diceRolls[diceRolls.length - i - 1] = temp;
+        }
+        System.out.println("Dice Rolls: " + Arrays.toString(diceRolls));
+
+        // distribute the highest roll to first role, etc
+        int numRolesOnCard = set.getCard().getRoles().size();
+        int[] onCardEarnings = new int[numRolesOnCard];
+        for (int i = 0; i < diceRolls.length; i++) {
+            onCardEarnings[i % onCardEarnings.length] += diceRolls[i];
+        }
+        System.out.println("On Card earnings: " + Arrays.toString(onCardEarnings));
 
         // give out rewards
+        for (int i = 0; i < numRolesOnCard; i++) {
+            Role role = set.getCard().getRoles().get(i);
+            if (role.isTaken()) {
+                role.getPlayer().earn(onCardEarnings[i], "dollar");
+                playerEarnings.put(role.getPlayer(), onCardEarnings[i]);
+            }
+        }
     }
 
     // returns whether the game was ended
@@ -89,5 +152,30 @@ public class GameManager {
         }
 
         return standings;
+    }
+
+    private ArrayList<Player> getPlayersOnRoles(Role[] roles) {
+        ArrayList<Player> players = new ArrayList<>();
+        for (Role role: roles) {
+            if (role.isTaken()) {
+                players.add(role.getPlayer());
+            }
+        }
+
+        return players;
+    }
+
+    private ArrayList<Player> getPlayersOnCard(Set set) {
+        return getPlayersOnRoles(set.getCard().getRoles().toArray(new Role[0]));
+    }
+
+    private ArrayList<Player> getPlayersOffCard(Set set) {
+        return getPlayersOnRoles(set.getExtraRoles());
+    }
+
+    private void clearPlayerRoles(ArrayList<Player> players) {
+        for (Player player: players) {
+            player.clearRole();
+        }
     }
 }
