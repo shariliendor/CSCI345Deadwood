@@ -85,9 +85,9 @@ public class GameManager {
     }
 
     private void distributeOnCardBonuses(Set set, ArrayList<Player> playersOnCard, HashMap<Player, Integer> playerEarnings) {
-//        if (playersOnCard.isEmpty()) {
-//            return;
-//        }
+        if (playersOnCard.isEmpty()) {
+            return;
+        }
 
         // on card players get dollar bonuses based on rolling dice
         int[] diceRolls = new int[set.getCard().getBudget()];

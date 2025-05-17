@@ -150,8 +150,7 @@ public class Player {
         int total = roll + practiceBonus;
         boolean success = total >= budget;
 
-        int earned = 0;
-        String currency = "";
+        HashMap<String, Integer> earnings = new HashMap<>();
 
         if (success) {
             set.removeShotCounter();
@@ -159,26 +158,24 @@ public class Player {
             if (set.isOnCardRole(role)) {
                 // On-card: 2 credits
                 earn(2, "credit");
-                earned = 2;
-                currency = "credit";
+                earnings.put("credit", 2);
             } else {
                 // Off-card: 1 dollar, 1 credit
                 earn(1, "dollar");
                 earn(1, "credit");
-                earned = 1;
-                currency = "dollar + credit";
+                earnings.put("dollar", 1);
+                earnings.put("credit", 1);
             }
         } else {
             if (!set.isOnCardRole(role)) {
                 // Fail but off-card: 1 dollar
                 earn(1, "dollar");
-                earned = 1;
-                currency = "dollar";
+                earnings.put("dollar", 1);
             }
         }
 
         int shotsLeft = set.getRemainingShots();
-        controller.displayActOutcome(success, earned, currency, shotsLeft);
+        controller.displayActOutcome(success, earnings, shotsLeft);
     }
 
 

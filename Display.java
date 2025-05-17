@@ -21,7 +21,7 @@ public interface Display {
 
     void displayUpgradeCosts();
 
-    void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft);
+    void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft);
 
     void displayRehearseOutcome(Role role);
 

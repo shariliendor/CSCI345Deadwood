@@ -53,8 +53,8 @@ public class Controller {
         display.displayRehearseOutcome(role);
     }
 
-    public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {
-        display.displayActOutcome(success, currencyEarned, currency, shotsLeft);
+    public void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft) {
+        display.displayActOutcome(success, earnings, shotsLeft);
     }
 
     public void displayMoveOutcome(Room room) {

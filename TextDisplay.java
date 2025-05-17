@@ -86,14 +86,16 @@ public class TextDisplay implements Display {
         System.out.println("Congratulations! You are now rank " + newRank + "!");
     }
 
-    public void displayActOutcome(boolean success, int currencyEarned, String currency, int shotsLeft) {
+    public void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft) {
         if (success) System.out.println("Success!");
         else System.out.println("Failure...");
 
-        if (currencyEarned > 0) {
-            System.out.println("You earned " + currencyEarned + " " + currency + "(s).");
+        if(earnings.isEmpty()) {
+            System.out.println("You didn't earn anything.");
         } else {
-            System.out.println("You didn't earn anything :(");
+            for (String currency: earnings.keySet()) {
+                System.out.println("You earned " + earnings.get(currency) + " " + currency + "(s).");
+            }
         }
 
         System.out.println("There are " + shotsLeft + " scenes left to shoot on this set.");
