@@ -190,13 +190,11 @@ public class Player {
 
         // Must be on a Set with an active scene
         if (!(location instanceof Set)) {
-            System.out.println("not on set");
             return false;
         }
 
         Set set = (Set) location;
         if (!set.isActive() || set.getCard() == null) {
-            System.out.println("set not active");
             return false;
         }
 
@@ -285,8 +283,6 @@ public class Player {
             .filter(r -> r.getName().equals(selectedRoleName))
             .findFirst()
             .orElse(null);
-        // use this instead lol
-        //Role chosenRole = controller.selectRole(availableRoles.toArray(new Role[0]));
 
         if (chosenRole != null) {
             chosenRole.setPlayer(this);
@@ -302,40 +298,36 @@ public class Player {
     }
 
     public boolean canTakeRole() {
-        // Player must not already have a role
-        if (hasRole()) {
-            return false;
-        }
-
-        // The location must be a Set with an active scene
-        if (location instanceof Set) {
-            Set set = (Set) location;
-
-            if (!set.isActive() || set.getCard() == null) {
-                return false;
-            }
-
-            // Check on-card roles from the Card
-            for (Role role : set.getCard().getRoles()) {
-                if (!role.isTaken() && canTakeRole(role)) {
-                    return true;
-                }
-            }
-
-            // Check off-card roles from the Set
-            for (Role role : set.getExtraRoles()) {
-                if (!role.isTaken() && canTakeRole(role)) {
-                    return true;
-                }
-            }
-        }
-
+    // Player must not already have a role
+    if (hasRole()) {
         return false;
     }
 
-    public void clearRole() {
-        role = null;
+    // The location must be a Set with an active scene
+    if (location instanceof Set) {
+        Set set = (Set) location;
+
+        if (!set.isActive() || set.getCard() == null) {
+            return false;
+        }
+
+        // Check on-card roles from the Card
+        for (Role role : set.getCard().getRoles()) {
+            if (!role.isTaken() && canTakeRole(role)) {
+                return true;
+            }
+        }
+
+        // Check off-card roles from the Set
+        for (Role role : set.getExtraRoles()) {
+            if (!role.isTaken() && canTakeRole(role)) {
+                return true;
+            }
+        }
     }
+
+    return false;
+}
 
     public boolean hasRole() {
         return role != null;

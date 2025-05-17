@@ -61,7 +61,7 @@ public class Controller {
         display.displayMoveOutcome(room);
     }
 
-    public void displayWrapOutcome(Set set, HashMap<Player, Integer> playerEarnings, int scenesLeft) {
+    public void displayWrapOutcome(Set set, HashMap<Player, HashMap<String, Integer>> playerEarnings, int scenesLeft) {
         display.displayWrapOutcome(set, playerEarnings, scenesLeft);
     }
 

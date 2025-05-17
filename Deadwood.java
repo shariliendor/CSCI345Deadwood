@@ -16,7 +16,7 @@ public class Deadwood {
         Controller controller = new Controller(input, display);
 
         SetupManager setupManager = new SetupManager(controller);
-        int numPlayers = controller.getNumPlayers();
+        int numPlayers = input.getNumPlayers();
 
         Player[] players = setupManager.createPlayers(numPlayers);
         int daysToPlay = setupManager.getDaysToPlay(numPlayers);
