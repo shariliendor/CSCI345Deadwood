@@ -4,5 +4,5 @@ public interface Input {
     String selectAction(String[] action);
     Room selectRoom(String[] room);
     Role selectRole(Role[] roles);
-    int chooseRank();
+    int chooseRank(int currRank, int maxRank);
 }

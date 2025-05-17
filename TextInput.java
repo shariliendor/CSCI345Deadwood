@@ -40,12 +40,10 @@ public class TextInput implements Input{
         return null; 
     }
 
-    public int chooseRank() {//james
-        // ask for number between currRank +1 and max rank
-        // validate with player
-        // return rank
-        return 0;
-    }// give possible ranks param
+    public int chooseRank(int currRank, int maxRank) {
+        System.out.println("Choose a rank to upgrade to (between " + (currRank + 1) + " and " + maxRank + "):");
+        return getNumWithinRange(currRank + 1, maxRank);
+    }
 
     private String selectOption(String toSelect, String[] options) {
         System.out.println("Select a(n) " + toSelect + ": ");

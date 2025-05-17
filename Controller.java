@@ -94,8 +94,8 @@ public class Controller {
         return input.selectRole(roles);
     }
 
-    public int chooseRank() {
-        return input.chooseRank();
+    public int chooseRank(int currRank, int maxRank) {
+        return input.chooseRank(currRank, maxRank);
     }
 
     public void displayTakeRoleOutcome(Role role) {
