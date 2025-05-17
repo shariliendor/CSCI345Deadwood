@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class TextInput implements Input{
     Scanner sc;
@@ -26,18 +27,23 @@ public class TextInput implements Input{
         return Room.getRoom(roomName);
     }
 
-    public Role selectRole(String[] roles) {// james
-        // figure out how to turn a string into a role
-        // maybe cards and sets have roleName hashMaps
-        return null;
+    public Role selectRole(Role[] roles) {
+        String[] roleNames = Arrays.stream(roles)
+                                   .map(Role::getName)
+                                   .toArray(String[]::new);
+        String selectedRoleName = selectOption("role", roleNames);
+        for (Role role : roles) {
+            if (role.getName().equals(selectedRoleName)) {
+                return role;
+            }
+        }
+        return null; 
     }
 
-    public int chooseRank() {//james
-        // ask for number between currRank +1 and max rank
-        // validate with player
-        // return rank
-        return 0;
-    }// give possible ranks param
+    public int chooseRank(int currRank, int maxRank) {
+        System.out.println("Choose a rank to upgrade to (between " + (currRank + 1) + " and " + maxRank + "):");
+        return getNumWithinRange(currRank + 1, maxRank);
+    }
 
     private String selectOption(String toSelect, String[] options) {
         System.out.println("Select a(n) " + toSelect + ": ");

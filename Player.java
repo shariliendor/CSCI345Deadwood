@@ -41,51 +41,46 @@ public class Player {
     }
 
     public void upgrade(Controller controller) {
-        // First, ensure player is in the Casting Office
         if (!location.getName().equalsIgnoreCase("office")) {
             controller.displayInvalidInput("You must be in the Casting Office to upgrade your rank.");
             return;
         }
 
-        // Display current rank and upgrade costs
         controller.displayUpdatedRank(rank);
         controller.displayUpgradeCosts();
 
-        // Determine possible ranks to upgrade to (above current rank)
         int maxRank = UpgradeManager.getMaxRank();
-        ArrayList<Integer> possibleRanks = new ArrayList<>();
+        ArrayList<Integer> affordableRanks = new ArrayList<>();
         for (int r = rank + 1; r <= maxRank; r++) {
             if (canPurchaseRank(r, "dollar") || canPurchaseRank(r, "credit")) {
-                possibleRanks.add(r);
+                affordableRanks.add(r);
             }
         }
 
-        // If no ranks available to upgrade
-        if (possibleRanks.isEmpty()) {
+        if (affordableRanks.isEmpty()) {
             controller.displayInvalidInput("You cannot afford any rank upgrades at this time.");
             return;
         }
 
-        // Ask player which rank they want to buy
-        String[] options = possibleRanks.stream()
-                                   .map(String::valueOf)
-                                   .toArray(String[]::new);
-        int chosenRank = Integer.parseInt(controller.selectAction(options));
+        // Use chooseRank with min/max bounds, but ensure the rank is affordable
+        int chosenRank;
+        while (true) {
+            chosenRank = controller.chooseRank(rank, maxRank);
+            if (affordableRanks.contains(chosenRank)) {
+                break;
+            }
+            controller.displayInvalidInput("You cannot afford rank " + chosenRank + ". Please choose again.");
+        }
 
-        // Check if player can afford chosen rank with dollars or credits
         int dollarCost = UpgradeManager.getDollarCost(chosenRank);
         int creditCost = UpgradeManager.getCreditCost(chosenRank);
 
-        boolean purchased = false;
         if (canPurchaseRank(chosenRank, "dollar") && assets.get("dollar") >= dollarCost) {
             spend(dollarCost, "dollar");
-            purchased = true;
+            rank = chosenRank;
+            controller.displayUpdatedRank(rank);
         } else if (canPurchaseRank(chosenRank, "credit") && assets.get("credit") >= creditCost) {
             spend(creditCost, "credit");
-            purchased = true;
-        }
-
-        if (purchased) {
             rank = chosenRank;
             controller.displayUpdatedRank(rank);
         } else {
@@ -244,10 +239,58 @@ public class Player {
         return !hasRole();
     }
 
-    public void takeRole(Controller controller) {//james
-        // get possible roles
-        // prompt player for role
-        // move to that room
+    public void takeRole(Controller controller) {
+        if (!(location instanceof Set)) {
+            controller.displayInvalidInput("You are not on a set.");
+            return;
+        }
+
+        Set set = (Set) location;
+        if (!set.isActive() || set.getCard() == null) {
+            controller.displayInvalidInput("There is no active scene to take a role in.");
+            return;
+        }
+
+        ArrayList<Role> availableRoles = new ArrayList<>();
+
+        // Add available on-card roles
+        for (Role r : set.getCard().getRoles()) {
+            if (!r.isTaken() && canTakeRole(r)) {
+                availableRoles.add(r);
+            }
+        }
+
+        // Add available off-card roles
+        for (Role r : set.getExtraRoles()) {
+            if (!r.isTaken() && canTakeRole(r)) {
+                availableRoles.add(r);
+            }
+        }
+
+        if (availableRoles.isEmpty()) {
+            controller.displayInvalidInput("No available roles you can take.");
+            return;
+        }
+
+        // Convert roles to displayable strings
+        String[] roleNames = availableRoles.stream()
+            .map(Role::getName)
+            .toArray(String[]::new);
+
+        // Ask player to choose a role
+        String selectedRoleName = controller.selectAction(roleNames);
+        Role chosenRole = availableRoles.stream()
+            .filter(r -> r.getName().equals(selectedRoleName))
+            .findFirst()
+            .orElse(null);
+
+        if (chosenRole != null) {
+            chosenRole.setPlayer(this);
+            this.role = chosenRole;
+            controller.displayTakeRoleOutcome(chosenRole);
+        } else {
+            controller.displayInvalidInput("Invalid role selection.");
+        }
     }
 
     public boolean canTakeRole(Role role) {
