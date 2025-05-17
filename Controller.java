@@ -97,4 +97,8 @@ public class Controller {
     public int chooseRank() {
         return input.chooseRank();
     }
+
+    public void displayTakeRoleOutcome(Role role) {
+        display.displayTakeRoleOutcome(role);
+    }
 }

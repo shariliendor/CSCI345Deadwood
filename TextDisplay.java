@@ -51,8 +51,13 @@ public class TextDisplay implements Display {
         }
     }
 
-    public void displayUpgradeCosts() {//james
-        // loop though upgrade cost hashmap
+    public void displayUpgradeCosts() {
+        System.out.println("Upgrade Costs:");
+        for (int r = 2; r <= UpgradeManager.getMaxRank(); r++) {
+            int dollarCost = UpgradeManager.getDollarCost(r);
+            int creditCost = UpgradeManager.getCreditCost(r);
+            System.out.println("Rank " + r + ": " + dollarCost + " dollars or " + creditCost + " credits");
+        }
     }
 
     public void displayRoomInfo(Room room) {
@@ -60,8 +65,11 @@ public class TextDisplay implements Display {
         System.out.println("Neighbors: " + join(room.getNeighbors(), ", "));
     }
 
-    public void displayRoleInfo(Role role) {//james
-
+    public void displayRoleInfo(Role role) {
+        String takenStatus = role.isTaken() ? "Taken" : "Available";
+        System.out.println("Role: " + role.getName() +
+                           ", Level: " + role.getLevel() +
+                           ", " + takenStatus);
     }
 
     public void displayStandings(Player[] players) {//chester
@@ -108,5 +116,9 @@ public class TextDisplay implements Display {
         str.append(arr[arr.length - 1]);
 
         return str.toString();
+    }
+
+    public void displayTakeRoleOutcome(Role role) {
+        System.out.println("You have taken the role: " + role.getName() + " (Level " + role.getLevel() + ")");
     }
 }

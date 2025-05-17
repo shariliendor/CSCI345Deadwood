@@ -244,10 +244,58 @@ public class Player {
         return !hasRole();
     }
 
-    public void takeRole(Controller controller) {//james
-        // get possible roles
-        // prompt player for role
-        // move to that room
+    public void takeRole(Controller controller) {
+        if (!(location instanceof Set)) {
+            controller.displayInvalidInput("You are not on a set.");
+            return;
+        }
+
+        Set set = (Set) location;
+        if (!set.isActive() || set.getCard() == null) {
+            controller.displayInvalidInput("There is no active scene to take a role in.");
+            return;
+        }
+
+        ArrayList<Role> availableRoles = new ArrayList<>();
+
+        // Add available on-card roles
+        for (Role r : set.getCard().getRoles()) {
+            if (!r.isTaken() && canTakeRole(r)) {
+                availableRoles.add(r);
+            }
+        }
+
+        // Add available off-card roles
+        for (Role r : set.getExtraRoles()) {
+            if (!r.isTaken() && canTakeRole(r)) {
+                availableRoles.add(r);
+            }
+        }
+
+        if (availableRoles.isEmpty()) {
+            controller.displayInvalidInput("No available roles you can take.");
+            return;
+        }
+
+        // Convert roles to displayable strings
+        String[] roleNames = availableRoles.stream()
+            .map(Role::getName)
+            .toArray(String[]::new);
+
+        // Ask player to choose a role
+        String selectedRoleName = controller.selectAction(roleNames);
+        Role chosenRole = availableRoles.stream()
+            .filter(r -> r.getName().equals(selectedRoleName))
+            .findFirst()
+            .orElse(null);
+
+        if (chosenRole != null) {
+            chosenRole.setPlayer(this);
+            this.role = chosenRole;
+            controller.displayTakeRoleOutcome(chosenRole);
+        } else {
+            controller.displayInvalidInput("Invalid role selection.");
+        }
     }
 
     public boolean canTakeRole(Role role) {

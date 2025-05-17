@@ -32,4 +32,6 @@ public interface Display {
     void announceWinner(Player player);
 
     void displayGameEnd(Player[] players);
+
+    void displayTakeRoleOutcome(Role role);
 }
