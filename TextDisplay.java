@@ -21,8 +21,8 @@ public class TextDisplay implements Display {
         System.out.println("It is " + player.getName() + "'s turn.");
     }
 
-    public void displayCurrentRank(Player player) {//james
-
+    public void displayCurrentRank(Player player) {
+        System.out.println(player.getName() + " is currently rank " + player.getRank() + ".");
     }
 
     public void displayPlayerInfo(Player player) {
