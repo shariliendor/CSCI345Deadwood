@@ -145,7 +145,14 @@ public class TextDisplay implements Display {
     }
 
     public void displayTakeRoleOutcome(Role role) {
-        String takenType = (role.getArea() != null) ? "Off-card role" : "On-card role"; // Assuming off-card roles have area info
+        // Try to get the player's current room and check if it's a Set
+        Room location = role.getPlayer().getLocation();
+
+        String takenType = "Unknown role type";
+        if (location instanceof Set set) {
+            takenType = set.isOnCardRole(role) ? "On-card role" : "Off-card role";
+        }
+
         System.out.println("You have taken the " + takenType + ": \"" + role.getName() + "\" (Level " + role.getLevel() + ")");
         System.out.println("Line: \"" + role.getLine() + "\"");
     }
