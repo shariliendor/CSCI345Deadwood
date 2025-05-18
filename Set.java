@@ -22,6 +22,7 @@ public class Set extends Room{
 
         for (Role role: card.getRoles()) {
             role.clearPlayer();
+            role.resetPracticeChips();
         }
     }
 
