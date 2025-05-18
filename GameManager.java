@@ -140,10 +140,13 @@ public class GameManager {
 
         for (int i = 0; i < players.length; i++) {
             Player highScorePlayer = toBeSorted.get(0);
+            int highScore = highScorePlayer.getPoints() + highScorePlayer.getRank() * 5;
 
             for (Player player : toBeSorted) {
-                if (player.getPoints() > highScorePlayer.getPoints()) {
+                int playerScore = player.getPoints() + player.getRank() * 5;
+                if (playerScore > highScore) {
                     highScorePlayer = player;
+                    highScore = playerScore;
                 }
             }
 

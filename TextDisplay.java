@@ -123,13 +123,25 @@ public class TextDisplay implements Display {
     }
 
     public void announceWinner(Player player) {
-        System.out.println(player.getName() + " wins with " + player.getPoints() + " points!");
+        System.out.println(player.getName() + " wins with " + (player.getPoints() + player.getRank()*5) + " points!");
     }
 
     public void displayGameEnd(Player[] standings) {
-        System.out.println("Game ended. Final Standings: ");
-        displayStandings(standings);
-        System.out.println();
+        System.out.println("\n===== Game Over! Final Standings =====");
+
+        for (int i = 0; i < standings.length; i++) {
+            Player p = standings[i];
+            int basePoints = p.getPoints();
+            int rankBonus = p.getRank() * 5;
+            int finalScore = basePoints + rankBonus;
+
+            System.out.println((i + 1) + ". " + p.getName()
+                + " - Base Points: " + basePoints
+                + ", Rank Bonus: " + rankBonus
+               + ", Final Score: " + finalScore);
+        }
+
+        System.out.println("======================================");
         announceWinner(standings[0]);
     }
 
