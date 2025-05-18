@@ -38,6 +38,7 @@ public class GameManager {
         }
 
         while(board.getSetsToShoot() > 1) {
+            controller.displayPlayerLocations(players);
             boolean endGame = nextTurn();
 
             for (Set set : board.getSets()) {
