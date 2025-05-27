@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.Scanner;
 
 public class Deadwood {
@@ -10,9 +11,13 @@ public class Deadwood {
         Deck deck = xmlParser.parseDeck(deckFile);
         Board board = xmlParser.parseBoard(boardFile);
 
-        Scanner sc = new Scanner(System.in);
-        Input input = new TextInput(sc);
-        Display display = new TextDisplay();
+//        Scanner sc = new Scanner(System.in);
+//        Input input = new TextInput(sc);
+//        Display display = new TextDisplay();
+
+        JFrame frame = new JFrame("Deadwood");
+        Input input  = new GUIInput(frame);
+        Display display = new GUIDisplay(frame);
         Controller controller = new Controller(input, display);
 
         SetupManager setupManager = new SetupManager(controller);
