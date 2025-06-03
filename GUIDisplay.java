@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class GUIDisplay implements Display{
     private final int WIDTH = 750, HEIGHT = 450;
-    private JLayeredPane boardPane, sidePane, dayPane, currPlayerPane, standingsPane, interfacePane;
+    private final JLayeredPane boardPane, sidePane, dayPane, currPlayerPane, standingsPane, interfacePane;
 
     public GUIDisplay(JFrame frame) {
         frame.setSize(WIDTH, HEIGHT);
@@ -12,27 +12,27 @@ public class GUIDisplay implements Display{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new FlowLayout());
 
-        boardPane = getLayeredPane(0, 0, 4 * WIDTH / 5, HEIGHT);
+        boardPane = getLayeredPane(4 * WIDTH / 5, HEIGHT);
         frame.add("Board", boardPane);
         boardPane.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
 
-        sidePane = getLayeredPane(4 * WIDTH / 5, 0, WIDTH / 5, HEIGHT);
+        sidePane = getLayeredPane(WIDTH / 5, HEIGHT);
         frame.add("Side Pane", sidePane);
         sidePane.setLayout(new FlowLayout());
 
-        dayPane = getLayeredPane(4 * WIDTH / 5, 0, WIDTH / 5, HEIGHT / 30);
+        dayPane = getLayeredPane(WIDTH / 5, HEIGHT / 30);
         dayPane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         sidePane.add("Day", dayPane);
 
-        currPlayerPane = getLayeredPane(4 * WIDTH / 5, HEIGHT / 30, WIDTH / 5, 5 * HEIGHT / 30);
+        currPlayerPane = getLayeredPane(WIDTH / 5, 5 * HEIGHT / 30);
         currPlayerPane.setBorder(BorderFactory.createTitledBorder("Active Player"));
         sidePane.add("Current Player", currPlayerPane);
 
-        standingsPane = getLayeredPane(4 * WIDTH / 5, 6 * HEIGHT / 30, WIDTH / 5, 8 * HEIGHT / 30);
+        standingsPane = getLayeredPane(WIDTH / 5, 8 * HEIGHT / 30);
         standingsPane.setBorder(BorderFactory.createTitledBorder("Standings"));
         sidePane.add("Standings", standingsPane);
 
-        interfacePane = getLayeredPane(4 * WIDTH / 5, 15 * HEIGHT / 30, WIDTH / 5, 15 * HEIGHT / 30);
+        interfacePane = getLayeredPane(WIDTH / 5, 15 * HEIGHT / 30);
         interfacePane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         sidePane.add("Interface", interfacePane);
 
@@ -40,10 +40,10 @@ public class GUIDisplay implements Display{
         frame.pack();
     }
 
-    private JLayeredPane getLayeredPane(int x, int  y, int width, int height) {
+    private JLayeredPane getLayeredPane(int width, int height) {
         JLayeredPane pane = new JLayeredPane();
-        pane.setLocation(x, y);
         pane.setPreferredSize(new Dimension(width, height));
+        pane.setLayout(new FlowLayout());
 
         return pane;
     }
