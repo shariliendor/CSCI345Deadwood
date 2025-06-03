@@ -6,6 +6,8 @@ public class GUIDisplay implements Display{
     private final int WIDTH = 750, HEIGHT = 450;
     private final JLayeredPane boardPane, sidePane, dayPane, currPlayerPane, standingsPane, interfacePane;
 
+    private final HashMap<Player, Integer> playerNumbers = new HashMap<>();
+
     public GUIDisplay(JFrame frame) {
         frame.setSize(WIDTH, HEIGHT);
         frame.setVisible(true);
@@ -13,8 +15,8 @@ public class GUIDisplay implements Display{
         frame.setLayout(new FlowLayout());
 
         boardPane = getLayeredPane(4 * WIDTH / 5, HEIGHT);
+        boardPane.add(new JLabel(getScaledImage("images/board.jpg", 4 * WIDTH / 5, HEIGHT)));
         frame.add("Board", boardPane);
-        boardPane.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
 
         sidePane = getLayeredPane(WIDTH / 5, HEIGHT);
         frame.add("Side Pane", sidePane);
@@ -22,22 +24,33 @@ public class GUIDisplay implements Display{
 
         dayPane = getLayeredPane(WIDTH / 5, HEIGHT / 30);
         dayPane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        dayPane.setLayout(new FlowLayout());
         sidePane.add("Day", dayPane);
 
         currPlayerPane = getLayeredPane(WIDTH / 5, 5 * HEIGHT / 30);
         currPlayerPane.setBorder(BorderFactory.createTitledBorder("Active Player"));
+        currPlayerPane.setLayout(new FlowLayout());
         sidePane.add("Current Player", currPlayerPane);
 
         standingsPane = getLayeredPane(WIDTH / 5, 8 * HEIGHT / 30);
         standingsPane.setBorder(BorderFactory.createTitledBorder("Standings"));
+        standingsPane.setLayout(new FlowLayout());
         sidePane.add("Standings", standingsPane);
 
         interfacePane = getLayeredPane(WIDTH / 5, 15 * HEIGHT / 30);
         interfacePane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        interfacePane.setLayout(new FlowLayout());
         sidePane.add("Interface", interfacePane);
 
 
         frame.pack();
+    }
+
+    private ImageIcon getScaledImage(String fileName, int width, int height) {
+        ImageIcon imageIcon = new ImageIcon(fileName);
+        Image image = imageIcon.getImage();
+        Image scaledImg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
+        return new ImageIcon(scaledImg);
     }
 
     private JLayeredPane getLayeredPane(int width, int height) {
@@ -102,6 +115,12 @@ public class GUIDisplay implements Display{
 
     @Override
     public void displayStandings(Player[] players) {
+        // fill player hashmap if not filled
+        if (playerNumbers.isEmpty()) {
+            for (int i = 0; i < players.length; i++) {
+                playerNumbers.put(players[i], i);
+            }
+        }
         // update standings panel
         StringBuilder standingsText = new StringBuilder();
 

@@ -91,6 +91,7 @@ public class GUIInput implements Input{
     }
 
     private JLayeredPane getInterfacePane() {
+        System.out.println(frame.getContentPane());
         JLayeredPane sidePane = (JLayeredPane) frame.getComponents()[1];//getPane(frame, "Side Pane");
         assert sidePane != null;
         return getPane(sidePane, "Interface");
