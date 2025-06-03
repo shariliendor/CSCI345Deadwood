@@ -1,30 +1,51 @@
 import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 
 public class GUIDisplay implements Display{
-    private final int WIDTH = 1500, HEIGHT = 900;
-    private JPanel boardPanel = new JPanel();
-    private JPanel sidePanel = new JPanel();
-    private JPanel dayPanel = new JPanel();
-    private JPanel currPlayerPanel = new JPanel();
-    private JPanel standingsPanel = new JPanel();
-    private JPanel interfacePanel = new JPanel();
+    private final int WIDTH = 750, HEIGHT = 450;
+    private JLayeredPane boardPane, sidePane, dayPane, currPlayerPane, standingsPane, interfacePane;
 
     public GUIDisplay(JFrame frame) {
         frame.setSize(WIDTH, HEIGHT);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new FlowLayout());
 
-        frame.add(boardPanel);
-        boardPanel.setLocation(0, 0);
-        boardPanel.setSize(4 * WIDTH / 5, HEIGHT);
+        boardPane = getLayeredPane(0, 0, 4 * WIDTH / 5, HEIGHT);
+        frame.add("Board", boardPane);
+        boardPane.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)));
 
-        frame.add(sidePanel);
-        sidePanel.setLocation(4 * WIDTH / 5, 0);
-        sidePanel.setSize(WIDTH / 5, HEIGHT);
+        sidePane = getLayeredPane(4 * WIDTH / 5, 0, WIDTH / 5, HEIGHT);
+        frame.add("Side Pane", sidePane);
+        sidePane.setLayout(new FlowLayout());
 
-        sidePanel.add(dayPanel);
-        dayPanel.setLocation(4 * WIDTH / 5, 0);
+        dayPane = getLayeredPane(4 * WIDTH / 5, 0, WIDTH / 5, HEIGHT / 30);
+        dayPane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        sidePane.add("Day", dayPane);
+
+        currPlayerPane = getLayeredPane(4 * WIDTH / 5, HEIGHT / 30, WIDTH / 5, 5 * HEIGHT / 30);
+        currPlayerPane.setBorder(BorderFactory.createTitledBorder("Active Player"));
+        sidePane.add("Current Player", currPlayerPane);
+
+        standingsPane = getLayeredPane(4 * WIDTH / 5, 6 * HEIGHT / 30, WIDTH / 5, 8 * HEIGHT / 30);
+        standingsPane.setBorder(BorderFactory.createTitledBorder("Standings"));
+        sidePane.add("Standings", standingsPane);
+
+        interfacePane = getLayeredPane(4 * WIDTH / 5, 15 * HEIGHT / 30, WIDTH / 5, 15 * HEIGHT / 30);
+        interfacePane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        sidePane.add("Interface", interfacePane);
+
+
+        frame.pack();
+    }
+
+    private JLayeredPane getLayeredPane(int x, int  y, int width, int height) {
+        JLayeredPane pane = new JLayeredPane();
+        pane.setLocation(x, y);
+        pane.setPreferredSize(new Dimension(width, height));
+
+        return pane;
     }
 
     @Override
@@ -39,7 +60,7 @@ public class GUIDisplay implements Display{
 
     public void displayDaysLeft(int daysLeft) {
         // update days left panel
-        setLabel(dayPanel, "Days Left: " + daysLeft);
+        setLabel(dayPane, "Days Left: " + daysLeft);
     }
 
     @Override
@@ -66,7 +87,7 @@ public class GUIDisplay implements Display{
             labelText.append(currency + "s: " + assets.get(currency) + "\n");
         }
 
-        setLabel(currPlayerPanel, labelText.toString());
+        setLabel(currPlayerPane, labelText.toString());
     }
 
     @Override
@@ -88,7 +109,7 @@ public class GUIDisplay implements Display{
             standingsText.append((i + 1) + ": " + players[i].getName() + " (" + players[i].getPoints() + " points)" + "\n");
         }
 
-        setLabel(standingsPanel, standingsText.toString());
+        setLabel(standingsPane, standingsText.toString());
     }
 
     @Override
@@ -100,7 +121,7 @@ public class GUIDisplay implements Display{
     @Override
     public void displayUpdatedRank(int newRank) {
         // update player sprites
-        setLabel(interfacePanel, "Congratulations! You are now rank " + newRank + "!");
+        setLabel(interfacePane, "Congratulations! You are now rank " + newRank + "!");
     }
 
     @Override
@@ -127,7 +148,7 @@ public class GUIDisplay implements Display{
 
         labelText.append("There are " + shotsLeft + " scenes left to shoot on this set.");
 
-        setLabel(interfacePanel, labelText.toString());
+        setLabel(interfacePane, labelText.toString());
     }
 
     @Override
@@ -135,7 +156,7 @@ public class GUIDisplay implements Display{
         String labelText =
                 "You have rehearsed. There are now " + role.getPracticeChips()
                 + " practice chips on " + role.getName();
-        setLabel(interfacePanel, labelText);
+        setLabel(interfacePane, labelText);
     }
 
     @Override
@@ -156,12 +177,12 @@ public class GUIDisplay implements Display{
 
         labelText.append("\n" + "There are " + scenesLeft + " sets left to shoot.");
 
-        setLabel(interfacePanel, labelText.toString());
+        setLabel(interfacePane, labelText.toString());
     }
 
     @Override
     public void announceWinner(Player player) {
-        setLabel(interfacePanel, player.getName() + " wins with " + (player.getPoints() + player.getRank()*5) + " points!");
+        setLabel(interfacePane, player.getName() + " wins with " + (player.getPoints() + player.getRank()*5) + " points!");
     }
 
     @Override
@@ -183,18 +204,18 @@ public class GUIDisplay implements Display{
         labelText.append("You have taken the " + takenType + ": \"" + role.getName() + "\" (Level " + role.getLevel() + ")\n");
         labelText.append("Line: \"" + role.getLine() + "\"");
 
-        setLabel(interfacePanel, labelText.toString());
+        setLabel(interfacePane, labelText.toString());
     }
 
-    private void setLabel(JPanel panel, String str) {
-        clear(panel);
+    private void setLabel(JLayeredPane pane, String str) {
+        clear(pane);
         JLabel label = new JLabel(str);
-        panel.add(label);
+        pane.add(label);
     }
 
-    private void clear(JPanel panel) {
-        while (panel.getComponentCount() > 0) {
-            panel.remove(0);
+    private void clear(JLayeredPane pane) {
+        while (pane.getComponentCount() > 0) {
+            pane.remove(0);
         }
     }
 }
