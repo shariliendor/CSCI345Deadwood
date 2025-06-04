@@ -15,19 +15,20 @@ public class Deadwood {
         GUIInput input = new GUIInput(frame);
         GUIDisplay display = new GUIDisplay(frame);
 
-        // Pass interfacePane reference so GUIInput can update the interface pane correctly
         input.setInterfacePane(display.getInterfacePane());
 
+        // Show card backs on all sets before gameplay begins
+        display.initializeCardbacks(board.getSets());
+
         Controller controller = new Controller(input, display);
-
         SetupManager setupManager = new SetupManager(controller);
-        int numPlayers = input.getNumPlayers();
 
+        int numPlayers = input.getNumPlayers();
         Player[] players = setupManager.createPlayers(numPlayers);
         int daysToPlay = setupManager.getDaysToPlay(numPlayers);
 
         GameManager gameManager = new GameManager(players, board, deck, controller, daysToPlay);
-
         gameManager.playGame();
     }
+
 }

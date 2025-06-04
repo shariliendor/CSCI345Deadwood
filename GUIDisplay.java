@@ -9,7 +9,14 @@ public class GUIDisplay implements Display {
 
     private final HashMap<Player, Integer> playerNumbers = new HashMap<>();
     private final HashMap<String, JLabel> roomImages = new HashMap<>();
+    private final HashMap<Player, JLabel> playerIcons = new HashMap<>();
+
     private final JLabel boardImageLabel;
+
+    // Your player icon filenames in order
+    private final String[] playerIconFiles = {
+        "b1.png", "c1.png", "g1.png", "o1.png", "p1.png", "r1.png", "v1.png", "w1.png", "y1.png"
+    };
 
     public GUIDisplay(JFrame frame) {
         this.frame = frame;
@@ -136,7 +143,29 @@ public class GUIDisplay implements Display {
     }
 
     @Override
-    public void displayPlayerLocations(Player[] players) {}
+    public void displayPlayerLocations(Player[] players) {
+        for (int i = 0; i < players.length; i++) {
+            Player player = players[i];
+            Room room = player.getLocation();
+            Area area = room.getArea();
+
+            int offsetX = (i % 4) * 15; // small offset to avoid overlap
+            int offsetY = (i / 4) * 15;
+
+            JLabel iconLabel = playerIcons.get(player);
+            if (iconLabel == null) {
+                String iconFile = "images/" + playerIconFiles[i % playerIconFiles.length];
+                iconLabel = new JLabel(new ImageIcon(iconFile));
+                iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
+                playerIcons.put(player, iconLabel);
+                boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
+            } else {
+                iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
+            }
+        }
+        boardPane.revalidate();
+        boardPane.repaint();
+    }
 
     @Override
     public void displayUpdatedRank(int newRank) {
@@ -207,7 +236,7 @@ public class GUIDisplay implements Display {
         if (room instanceof Set setRoom) {
             Card card = setRoom.getCard();
             if (card != null) {
-               String cardName = card.getName();
+                String cardName = card.getName();
                 if (!roomImages.containsKey(cardName)) {
                     System.out.println("Showing card: " + cardName);
 
@@ -217,12 +246,24 @@ public class GUIDisplay implements Display {
                     cardLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
 
                     boardPane.add(cardLabel, JLayeredPane.PALETTE_LAYER);
-                   roomImages.put(cardName, cardLabel);
+                    roomImages.put(cardName, cardLabel);
 
                     boardPane.revalidate();
                     boardPane.repaint();
                 }
             }
         }
+    }
+
+    public void initializeCardbacks(Set[] sets) {
+        for (Set set : sets) {
+            Area area = set.getArea();
+            JLabel cardbackLabel = new JLabel(new ImageIcon("images/Cardback.png"));
+            cardbackLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+            boardPane.add(cardbackLabel, JLayeredPane.PALETTE_LAYER);
+            roomImages.put(set.getName(), cardbackLabel);
+        }
+        boardPane.revalidate();
+        boardPane.repaint();
     }
 }
