@@ -15,7 +15,7 @@ public class GUIDisplay implements Display {
 
     // Your player icon filenames in order
     private final String[] playerIconFiles = {
-        "b1.png", "c1.png", "g1.png", "o1.png", "p1.png", "r1.png", "v1.png", "w1.png", "y1.png"
+            "b1.png", "c1.png", "g1.png", "o1.png", "p1.png", "r1.png", "v1.png", "w1.png", "y1.png"
     };
 
     public GUIDisplay(JFrame frame) {
@@ -86,10 +86,12 @@ public class GUIDisplay implements Display {
     }
 
     @Override
-    public void displayWelcome() {}
+    public void displayWelcome() {
+    }
 
     @Override
-    public void displayInvalidInput(String message) {}
+    public void displayInvalidInput(String message) {
+    }
 
     @Override
     public void displayPlayerTurn(Player player) {
@@ -116,10 +118,12 @@ public class GUIDisplay implements Display {
     }
 
     @Override
-    public void displayRoomInfo(Room room) {}
+    public void displayRoomInfo(Room room) {
+    }
 
     @Override
-    public void displayRoleInfo(Role role) {}
+    public void displayRoleInfo(Role role) {
+    }
 
     @Override
     public void displayStandings(Player[] players) {
@@ -146,28 +150,31 @@ public class GUIDisplay implements Display {
     public void displayPlayerLocations(Player[] players) {
         for (int i = 0; i < players.length; i++) {
             Player player = players[i];
-            Room room = player.getLocation();
-            Area area = room.getArea();
-
             int offsetX = (i % 4) * 15;
-            int offsetY = (i / 4) * 15 + 120; // add 120 so it's below the card
+            int offsetY = (i / 4) * 15;
 
             JLabel iconLabel = playerIcons.get(player);
-            String baseIconFile = playerIconFiles[i % playerIconFiles.length];
-            String letter = baseIconFile.substring(0, 1);
-            int rank = player.getRank();
-            String iconFile = "images/" + letter + rank + ".png";
-
             if (iconLabel == null) {
+                // Use icon based on rank
+                int rank = player.getRank();
+                String iconFile = "images/" + playerIconFiles[Math.min(rank - 1, playerIconFiles.length - 1)];
                 iconLabel = new JLabel(new ImageIcon(iconFile));
-                iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
                 playerIcons.put(player, iconLabel);
                 boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
-            } else {
-                iconLabel.setIcon(new ImageIcon(iconFile)); // update icon in case rank changed
+            }
+
+            // If player is on a role, position them at the role’s area
+            if (player.hasRole()) {
+                Area area = player.getRole().getArea();
                 iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
+            } else {
+                Room room = player.getLocation();
+                Area area = room.getArea();
+                iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY + 120, 20, 20); // +120 offset to stay
+                                                                                                 // below the card
             }
         }
+
         boardPane.revalidate();
         boardPane.repaint();
     }
@@ -178,7 +185,8 @@ public class GUIDisplay implements Display {
     }
 
     @Override
-    public void displayUpgradeCosts() {}
+    public void displayUpgradeCosts() {
+    }
 
     @Override
     public void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft) {
@@ -188,7 +196,8 @@ public class GUIDisplay implements Display {
             labelText.append("You didn't earn anything.<br>");
         } else {
             for (String currency : earnings.keySet()) {
-                labelText.append("You earned ").append(earnings.get(currency)).append(" ").append(currency).append("(s).<br>");
+                labelText.append("You earned ").append(earnings.get(currency)).append(" ").append(currency)
+                        .append("(s).<br>");
             }
         }
         labelText.append("There are ").append(shotsLeft).append(" scenes left to shoot on this set.</html>");
@@ -210,7 +219,8 @@ public class GUIDisplay implements Display {
         StringBuilder labelText = new StringBuilder("<html>");
         labelText.append(set.getName()).append(" has been wrapped!<br>");
         for (Player player : playerEarnings.keySet()) {
-            labelText.append(player.getName()).append(" earned ").append(playerEarnings.get(player)).append(" dollars.<br>");
+            labelText.append(player.getName()).append(" earned ").append(playerEarnings.get(player))
+                    .append(" dollars.<br>");
         }
         labelText.append("<br>There are ").append(scenesLeft).append(" sets left to shoot.</html>");
         setLabel(interfacePane, labelText.toString());
@@ -219,7 +229,8 @@ public class GUIDisplay implements Display {
     @Override
     public void announceWinner(Player player) {
         clear(interfacePane);
-        setLabel(interfacePane, player.getName() + " wins with " + (player.getPoints() + player.getRank() * 5) + " points!");
+        setLabel(interfacePane,
+                player.getName() + " wins with " + (player.getPoints() + player.getRank() * 5) + " points!");
     }
 
     @Override
@@ -242,7 +253,8 @@ public class GUIDisplay implements Display {
         // Determine role type
         Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
-        String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel() + ")<br>Line: \"" + role.getLine() + "\"";
+        String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel()
+                + ")<br>Line: \"" + role.getLine() + "\"";
         setLabel(interfacePane, text);
 
         boardPane.revalidate();
