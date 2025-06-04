@@ -13,7 +13,7 @@ public class GameManager {
         this.board = board;
         this.deck = deck;
         this.daysLeft = days;
-        currentPlayer = (int) (Math.random() * players.length);
+        this.currentPlayer = (int) (Math.random() * players.length);
         this.controller = controller;
     }
 
@@ -33,11 +33,13 @@ public class GameManager {
         board.resetShotMarkers();
         board.activateSets();
 
-        for (Player player: players) {
+        // Set all players to trailer at day start and show room image
+        for (Player player : players) {
             player.setLocation(board.getTrailer());
+            controller.displayRoomImage(player.getLocation());
         }
 
-        while(board.getSetsToShoot() > 1) {
+        while (board.getSetsToShoot() > 1) {
             controller.displayPlayerLocations(players);
             boolean endGame = nextTurn();
 
@@ -49,36 +51,36 @@ public class GameManager {
 
             if (endGame) return true;
         }
-        daysLeft --;
+        daysLeft--;
 
         return false;
     }
 
     private void dealToSets() {
-        for (Set set: board.getSets()) {
+        for (Set set : board.getSets()) {
             Card card = deck.draw();
-            set.setCard(deck.draw());
+            set.setCard(card);
         }
     }
 
-    public void wrap(Set set) {//chester
+    public void wrap(Set set) {
         ArrayList<Player> playersOnCard = getPlayersOnCard(set);
         ArrayList<Player> playersOffCard = getPlayersOffCard(set);
-        HashMap<Player, Integer> playerEarnings= new HashMap<>();
+        HashMap<Player, Integer> playerEarnings = new HashMap<>();
 
         distributeOnCardBonuses(set, playersOnCard, playerEarnings);
 
-        // off card players get dollar bonuses equal to the level of their role
+        // Off card players get dollar bonuses equal to the level of their role
         for (Player player : playersOffCard) {
             int bonus = player.getRole().getLevel();
             player.earn(bonus, "dollar");
             playerEarnings.put(player, bonus);
         }
 
-        // display outcome
+        // Display wrap outcome
         controller.displayWrapOutcome(set, playerEarnings, board.getSetsToShoot());
 
-        // clear roles and take players off roles
+        // Clear roles and remove players from roles
         set.clearRoles();
         set.setActive(false);
         clearPlayerRoles(playersOffCard);
@@ -90,29 +92,25 @@ public class GameManager {
             return;
         }
 
-        // on card players get dollar bonuses based on rolling dice
-        int[] diceRolls = new int[set.getCard().getBudget()];
-        for (int i = 0; i < set.getCard().getBudget(); i++) {
+        int budget = set.getCard().getBudget();
+        int[] diceRolls = new int[budget];
+        for (int i = 0; i < budget; i++) {
             diceRolls[i] = (int) (Math.random() * 6) + 1;
         }
         Arrays.sort(diceRolls);
-        // sorted in ascending order, need to reverse
+        // Reverse for descending order
         for (int i = 0; i < diceRolls.length / 2; i++) {
             int temp = diceRolls[i];
             diceRolls[i] = diceRolls[diceRolls.length - i - 1];
             diceRolls[diceRolls.length - i - 1] = temp;
         }
-        System.out.println("Dice Rolls: " + Arrays.toString(diceRolls));
 
-        // distribute the highest roll to first role, etc
         int numRolesOnCard = set.getCard().getRoles().size();
         int[] onCardEarnings = new int[numRolesOnCard];
         for (int i = 0; i < diceRolls.length; i++) {
             onCardEarnings[i % onCardEarnings.length] += diceRolls[i];
         }
-        System.out.println("On Card earnings: " + Arrays.toString(onCardEarnings));
 
-        // give out rewards
         for (int i = 0; i < numRolesOnCard; i++) {
             Role role = set.getCard().getRoles().get(i);
             if (role.isTaken()) {
@@ -122,12 +120,15 @@ public class GameManager {
         }
     }
 
-    // returns whether the game was ended
+    // Returns whether the game was ended
     public boolean nextTurn() {
         boolean gameEnded = players[currentPlayer].takeTurn(controller);
-        currentPlayer ++;
-        currentPlayer %= players.length;
 
+        // After player's turn, update displayed room image
+        controller.displayRoomImage(players[currentPlayer].getLocation());
+
+        currentPlayer++;
+        currentPlayer %= players.length;
         return gameEnded;
     }
 
@@ -160,12 +161,11 @@ public class GameManager {
 
     private ArrayList<Player> getPlayersOnRoles(Role[] roles) {
         ArrayList<Player> players = new ArrayList<>();
-        for (Role role: roles) {
+        for (Role role : roles) {
             if (role.isTaken()) {
                 players.add(role.getPlayer());
             }
         }
-
         return players;
     }
 
@@ -178,7 +178,7 @@ public class GameManager {
     }
 
     private void clearPlayerRoles(ArrayList<Player> players) {
-        for (Player player: players) {
+        for (Player player : players) {
             player.clearRole();
         }
     }

@@ -168,4 +168,7 @@ public class TextDisplay implements Display {
         System.out.println("You have taken the " + takenType + ": \"" + role.getName() + "\" (Level " + role.getLevel() + ")");
         System.out.println("Line: \"" + role.getLine() + "\"");
     }
+    public void showRoomImage(Room room){
+        
+    }
 }

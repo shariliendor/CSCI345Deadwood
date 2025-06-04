@@ -101,4 +101,8 @@ public class Controller {
     public void displayTakeRoleOutcome(Role role) {
         display.displayTakeRoleOutcome(role);
     }
+
+    public void displayRoomImage(Room room) {
+        display.showRoomImage(room);
+    }
 }

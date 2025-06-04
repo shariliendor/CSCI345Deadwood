@@ -11,13 +11,13 @@ public class Deadwood {
         Deck deck = xmlParser.parseDeck(deckFile);
         Board board = xmlParser.parseBoard(boardFile);
 
-//        Scanner sc = new Scanner(System.in);
-//        Input input = new TextInput(sc);
-//        Display display = new TextDisplay();
-
         JFrame frame = new JFrame("Deadwood");
-        Input input  = new GUIInput(frame);
-        Display display = new GUIDisplay(frame);
+        GUIInput input = new GUIInput(frame);
+        GUIDisplay display = new GUIDisplay(frame);
+
+        // Pass interfacePane reference so GUIInput can update the interface pane correctly
+        input.setInterfacePane(display.getInterfacePane());
+
         Controller controller = new Controller(input, display);
 
         SetupManager setupManager = new SetupManager(controller);

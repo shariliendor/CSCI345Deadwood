@@ -34,4 +34,6 @@ public interface Display {
     void displayGameEnd(Player[] players);
 
     void displayTakeRoleOutcome(Role role);
+
+    void showRoomImage(Room room);
 }

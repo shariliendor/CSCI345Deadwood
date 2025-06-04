@@ -2,217 +2,190 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
-public class GUIDisplay implements Display{
-    private final int WIDTH = 750, HEIGHT = 450;
+public class GUIDisplay implements Display {
+    private final int WIDTH = 1200, HEIGHT = 900;
     private final JFrame frame;
     private final JLayeredPane boardPane, sidePane, dayPane, currPlayerPane, standingsPane, interfacePane;
 
     private final HashMap<Player, Integer> playerNumbers = new HashMap<>();
+    private final HashMap<String, JLabel> roomImages = new HashMap<>();
+    private final JLabel boardImageLabel;
 
     public GUIDisplay(JFrame frame) {
         this.frame = frame;
-        frame.setSize(WIDTH, HEIGHT);
-        frame.setVisible(true);
+        frame.setSize(WIDTH + 300, HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new FlowLayout());
+        frame.setLayout(new BorderLayout());
 
-        boardPane = getLayeredPane(4 * WIDTH / 5, HEIGHT);
-        boardPane.add(new JLabel(getScaledImage("images/board.jpg", 4 * WIDTH / 5, HEIGHT)));
-        frame.getContentPane().add("Board", boardPane);
+        boardPane = getLayeredPane(WIDTH, HEIGHT);
+        boardImageLabel = new JLabel(new ImageIcon("images/board.jpg"));
+        boardImageLabel.setBounds(0, 0, WIDTH, HEIGHT);
+        boardPane.add(boardImageLabel, JLayeredPane.DEFAULT_LAYER);
+        frame.add(boardPane, BorderLayout.CENTER);
 
-        sidePane = getLayeredPane(WIDTH / 5, HEIGHT);
-        frame.getContentPane().add("Side Pane", sidePane);
-        sidePane.setLayout(new FlowLayout());
+        sidePane = new JLayeredPane();
+        sidePane.setPreferredSize(new Dimension(300, HEIGHT));
+        sidePane.setLayout(new BoxLayout(sidePane, BoxLayout.Y_AXIS));
+        frame.add(sidePane, BorderLayout.EAST);
 
-        dayPane = getLayeredPane(WIDTH / 5, HEIGHT / 30);
-        dayPane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
-        dayPane.setLayout(new FlowLayout());
-        sidePane.add("Day", dayPane);
+        dayPane = createSideSection("Day");
+        currPlayerPane = createSideSection("Active Player");
+        standingsPane = createSideSection("Standings");
+        interfacePane = createSideSection("Interface");
 
-        currPlayerPane = getLayeredPane(WIDTH / 5, 8 * HEIGHT / 30);
-        currPlayerPane.setBorder(BorderFactory.createTitledBorder("Active Player"));
-        currPlayerPane.setLayout(new FlowLayout());
-        sidePane.add("Current Player", currPlayerPane);
-
-        standingsPane = getLayeredPane(WIDTH / 5, 10 * HEIGHT / 30);
-        standingsPane.setBorder(BorderFactory.createTitledBorder("Standings"));
-        standingsPane.setLayout(new FlowLayout());
-        sidePane.add("Standings", standingsPane);
-
-        interfacePane = getLayeredPane(WIDTH / 5, 9 * HEIGHT / 30);
-        interfacePane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
-        interfacePane.setLayout(new FlowLayout());
-        sidePane.add("Interface", interfacePane);
-
-
-        frame.pack();
+        frame.setVisible(true);
     }
 
-    private ImageIcon getScaledImage(String fileName, int width, int height) {
-        ImageIcon imageIcon = new ImageIcon(fileName);
-        Image image = imageIcon.getImage();
-        Image scaledImg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
-        return new ImageIcon(scaledImg);
+    private JLayeredPane createSideSection(String title) {
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder(title));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setPreferredSize(new Dimension(300, HEIGHT / 4));
+
+        JLayeredPane pane = new JLayeredPane();
+        pane.setPreferredSize(panel.getPreferredSize());
+        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+        pane.setName(title);
+        panel.add(pane);
+        sidePane.add(panel);
+
+        return pane;
     }
 
     private JLayeredPane getLayeredPane(int width, int height) {
         JLayeredPane pane = new JLayeredPane();
         pane.setPreferredSize(new Dimension(width, height));
-        pane.setLayout(new FlowLayout());
-
+        pane.setLayout(null);
         return pane;
     }
 
-    @Override
-    public void displayWelcome() {
-        // not used
+    public JLayeredPane getInterfacePane() {
+        return interfacePane;
+    }
+
+    private void setLabel(JLayeredPane pane, String str) {
+        clear(pane);
+        JLabel label = new JLabel("<html>" + str.replace("\n", "<br>") + "</html>");
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        pane.add(label);
+        pane.revalidate();
+        pane.repaint();
+    }
+
+    private void clear(JLayeredPane pane) {
+        pane.removeAll();
+        pane.revalidate();
+        pane.repaint();
     }
 
     @Override
-    public void displayInvalidInput(String message) {
-        // maybe for number of players
-    }
+    public void displayWelcome() {}
 
-    public void displayDaysLeft(int daysLeft) {
-        // update days left panel
-        setLabel(dayPane, "Days Left: " + daysLeft);
-    }
+    @Override
+    public void displayInvalidInput(String message) {}
 
     @Override
     public void displayPlayerTurn(Player player) {
-        // calls displayPlayerInfo 'cause they are basically the same in our GUI implementation
         displayPlayerInfo(player);
     }
 
     @Override
     public void displayPlayerInfo(Player player) {
-        // update currPlayer panel with stats of current player
         StringBuilder labelText = new StringBuilder("<html>");
-        labelText.append("Name: " + player.getName() + "<br>");
-        labelText.append("Rank: " + player.getRank() + "<br>");
-        labelText.append("Points: " + player.getPoints() + "<br>");
-
+        labelText.append("Name: ").append(player.getName()).append("<br>");
+        labelText.append("Rank: ").append(player.getRank()).append("<br>");
+        labelText.append("Points: ").append(player.getPoints()).append("<br>");
         if (player.hasRole()) {
-            labelText.append("Role: " + player.getRole().getName() + "<br>");
+            labelText.append("Role: ").append(player.getRole().getName()).append("<br>");
         } else {
-            labelText.append("Role: None" + "<br>");
+            labelText.append("Role: None<br>");
         }
-
         HashMap<String, Integer> assets = player.getAssets();
-        for (String currency: assets.keySet()) {
-            labelText.append(currency + "s: " + assets.get(currency) + "<br>");
+        for (String currency : assets.keySet()) {
+            labelText.append(currency).append("s: ").append(assets.get(currency)).append("<br>");
         }
-
         labelText.append("</html>");
-
         setLabel(currPlayerPane, labelText.toString());
     }
 
     @Override
-    public void displayRoomInfo(Room room) {
-        // not used in model
-    }
+    public void displayRoomInfo(Room room) {}
 
     @Override
-    public void displayRoleInfo(Role role) {
-        // not used in model
-    }
+    public void displayRoleInfo(Role role) {}
 
     @Override
     public void displayStandings(Player[] players) {
-        // fill player hashmap if not filled
         if (playerNumbers.isEmpty()) {
             for (int i = 0; i < players.length; i++) {
                 playerNumbers.put(players[i], i);
             }
         }
-        // update standings panel
-        StringBuilder standingsText = new StringBuilder("<html>");
 
+        StringBuilder standingsText = new StringBuilder("<html>");
         for (int i = 0; i < players.length; i++) {
-            standingsText.append((i + 1) + ": " + players[i].getName() + " (" +
-                    (players[i].getPoints() + players[i].getRank() * 5) + " points)" + "<br>");
+            standingsText.append(i + 1)
+                    .append(": ")
+                    .append(players[i].getName())
+                    .append(" (")
+                    .append(players[i].getPoints() + players[i].getRank() * 5)
+                    .append(" points)<br>");
         }
         standingsText.append("</html>");
-
         setLabel(standingsPane, standingsText.toString());
     }
 
     @Override
-    public void displayPlayerLocations(Player[] players) {
-        // each player has a spot in each room different from other players
-        // put the player in their spot
-    }
+    public void displayPlayerLocations(Player[] players) {}
 
     @Override
     public void displayUpdatedRank(int newRank) {
-        // update player sprites
-        setLabel(interfacePane, "<html><p>Congratulations! You are now rank " + newRank + "!</p></html>");
+        setLabel(interfacePane, "Congratulations! You are now rank " + newRank + "!");
     }
 
     @Override
-    public void displayUpgradeCosts() {
-        // already drawn on the board lol
-    }
+    public void displayUpgradeCosts() {}
 
     @Override
     public void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft) {
-        // add a label to the interface panel
-        // click to continue
         StringBuilder labelText = new StringBuilder("<html>");
-
-        if (success) labelText.append("Success!" + "<br>");
-        else labelText.append("Failure..." + "<br>");
-
-        if(earnings.isEmpty()) {
-            labelText.append("You didn't earn anything." + "<br>");
+        labelText.append(success ? "Success!<br>" : "Failure...<br>");
+        if (earnings.isEmpty()) {
+            labelText.append("You didn't earn anything.<br>");
         } else {
-            for (String currency: earnings.keySet()) {
-                labelText.append("You earned " + earnings.get(currency) + " " + currency + "(s)." + "<br>");
+            for (String currency : earnings.keySet()) {
+                labelText.append("You earned ").append(earnings.get(currency)).append(" ").append(currency).append("(s).<br>");
             }
         }
-
-        labelText.append("There are " + shotsLeft + " scenes left to shoot on this set.</p></html>");
-
+        labelText.append("There are ").append(shotsLeft).append(" scenes left to shoot on this set.</html>");
         setLabel(interfacePane, labelText.toString());
     }
 
     @Override
     public void displayRehearseOutcome(Role role) {
-        String labelText =
-                "<html><p>You have rehearsed. There are now " + role.getPracticeChips()
-                + " practice chips on " + role.getName() + "</p></html>";
-        setLabel(interfacePane, labelText);
+        setLabel(interfacePane, "You rehearsed. Practice chips on " + role.getName() + ": " + role.getPracticeChips());
     }
 
     @Override
     public void displayMoveOutcome(Room room) {
-        // move the current player to the specified room
-        // need to get the current player somehow
+        showRoomImage(room);
     }
 
     @Override
     public void displayWrapOutcome(Set set, HashMap<Player, Integer> playerEarnings, int scenesLeft) {
         StringBuilder labelText = new StringBuilder("<html>");
-
-        labelText.append(set.getName() + " has been wrapped!" + "<br>");
-
-        for (Player player: playerEarnings.keySet()) {
-            labelText.append(player.getName() + " earned " + playerEarnings.get(player) + " dollars." + "<br>");
+        labelText.append(set.getName()).append(" has been wrapped!<br>");
+        for (Player player : playerEarnings.keySet()) {
+            labelText.append(player.getName()).append(" earned ").append(playerEarnings.get(player)).append(" dollars.<br>");
         }
-
-        labelText.append("<br>" + "There are " + scenesLeft + " sets left to shoot." + "</html>");
-
+        labelText.append("<br>There are ").append(scenesLeft).append(" sets left to shoot.</html>");
         setLabel(interfacePane, labelText.toString());
     }
 
     @Override
     public void announceWinner(Player player) {
         clear(interfacePane);
-        setLabel(interfacePane,
-                "<html><p>" +
-                player.getName() + " wins with " + (player.getPoints() + player.getRank()*5) + " points!" +
-                "</p></html>");
+        setLabel(interfacePane, player.getName() + " wins with " + (player.getPoints() + player.getRank() * 5) + " points!");
     }
 
     @Override
@@ -224,29 +197,32 @@ public class GUIDisplay implements Display{
     @Override
     public void displayTakeRoleOutcome(Role role) {
         Room location = role.getPlayer().getLocation();
-
-        String takenType = "Unknown role type";
-        if (location instanceof Set set) {
-            takenType = set.isOnCardRole(role) ? "On-card role" : "Off-card role";
-        }
-
-        StringBuilder labelText = new StringBuilder();
-        labelText.append("You have taken the " + takenType + ": \"" + role.getName() + "\" (Level " + role.getLevel() + ")\n");
-        labelText.append("Line: \"" + role.getLine() + "\"");
-
-        setLabel(interfacePane, labelText.toString());
+        String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
+        String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel() + ")<br>Line: \"" + role.getLine() + "\"";
+        setLabel(interfacePane, text);
     }
 
-    private void setLabel(JLayeredPane pane, String str) {
-        clear(pane);
-        JLabel label = new JLabel(str);
-        pane.add(label);
-        frame.pack();
-    }
+    @Override
+    public void showRoomImage(Room room) {
+        if (room instanceof Set setRoom) {
+            Card card = setRoom.getCard();
+            if (card != null) {
+               String cardName = card.getName();
+                if (!roomImages.containsKey(cardName)) {
+                    System.out.println("Showing card: " + cardName);
 
-    private void clear(JLayeredPane pane) {
-        while (pane.getComponentCount() > 0) {
-            pane.remove(0);
+                    Area area = room.getArea();
+                    ImageIcon icon = new ImageIcon("images/Cards/" + card.getImage());
+                    JLabel cardLabel = new JLabel(icon);
+                    cardLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+
+                    boardPane.add(cardLabel, JLayeredPane.PALETTE_LAYER);
+                   roomImages.put(cardName, cardLabel);
+
+                    boardPane.revalidate();
+                    boardPane.repaint();
+                }
+            }
         }
     }
 }
