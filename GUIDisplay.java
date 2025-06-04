@@ -18,6 +18,10 @@ public class GUIDisplay implements Display {
             "b1.png", "c1.png", "g1.png", "o1.png", "p1.png", "r1.png", "v1.png", "w1.png", "y1.png"
     };
 
+    private final String[] playerIconPrefixes = {
+            "b", "c", "g", "o", "p", "r", "v", "w", "y"
+    };
+
     public GUIDisplay(JFrame frame) {
         this.frame = frame;
         frame.setSize(WIDTH + 300, HEIGHT);
@@ -146,38 +150,71 @@ public class GUIDisplay implements Display {
         setLabel(standingsPane, standingsText.toString());
     }
 
-    @Override
-    public void displayPlayerLocations(Player[] players) {
-        for (int i = 0; i < players.length; i++) {
-            Player player = players[i];
-            int offsetX = (i % 4) * 15;
-            int offsetY = (i / 4) * 15;
+@Override
+public void displayPlayerLocations(Player[] players) {
+    for (int i = 0; i < players.length; i++) {
+        Player player = players[i];
 
-            JLabel iconLabel = playerIcons.get(player);
-            if (iconLabel == null) {
-                // Use icon based on rank
-                int rank = player.getRank();
-                String iconFile = "images/" + playerIconFiles[Math.min(rank - 1, playerIconFiles.length - 1)];
-                iconLabel = new JLabel(new ImageIcon(iconFile));
-                playerIcons.put(player, iconLabel);
-                boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
-            }
+        JLabel iconLabel = playerIcons.get(player);
+        boolean isNew = false;
 
-            // If player is on a role, position them at the role’s area
-            if (player.hasRole()) {
-                Area area = player.getRole().getArea();
-                iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
-            } else {
-                Room room = player.getLocation();
-                Area area = room.getArea();
-                iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY + 120, 20, 20); // +120 offset to stay
-                                                                                                 // below the card
-            }
+        int rank = player.getRank();
+        int iconRank = Math.min(rank, 6);
+        String iconFile = "images/" + playerIconPrefixes[i] + iconRank + ".png";
+
+        if (iconLabel == null) {
+            iconLabel = new JLabel(new ImageIcon(iconFile));
+            playerIcons.put(player, iconLabel);
+            isNew = true;
+        } else {
+            iconLabel.setIcon(new ImageIcon(iconFile));
         }
 
-        boardPane.revalidate();
-        boardPane.repaint();
+        Room room = player.getLocation();
+        Area area;
+        int x, y;
+
+        if (player.hasRole()) {
+            Role role = player.getRole();
+            if (room instanceof Set set) {
+                if (set.isOnCardRole(role)) {
+                    // ✅ On-card role: use Set’s area + offset
+                    area = room.getArea();
+                    int offsetX = (i % 4) * 15;
+                    int offsetY = (i / 4) * 15;
+                    x = area.getX() + offsetX;
+                    y = area.getY() + offsetY;
+                } else {
+                    // ✅ Off-card role: use Role’s own area, no offset
+                    area = role.getArea();
+                    x = area.getX();
+                    y = area.getY();
+                }
+            } else {
+                // fallback: treat it like off-card
+                area = role.getArea();
+                x = area.getX();
+                y = area.getY();
+            }
+        } else {
+            // ✅ Not on role: use Room’s area + offset
+            area = room.getArea();
+            int offsetX = (i % 4) * 15;
+            int offsetY = (i / 4) * 15;
+            x = area.getX() + offsetX;
+            y = area.getY() + offsetY + 120;
+        }
+
+        iconLabel.setBounds(x, y, 40, 40);
+
+        if (isNew) {
+            boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
+        }
     }
+
+    boardPane.revalidate();
+    boardPane.repaint();
+}
 
     @Override
     public void displayUpdatedRank(int newRank) {
@@ -247,7 +284,7 @@ public class GUIDisplay implements Display {
         // Move the player's icon to the role's area
         JLabel iconLabel = playerIcons.get(player);
         if (iconLabel != null) {
-            iconLabel.setBounds(area.getX(), area.getY(), 20, 20);
+            iconLabel.setBounds(area.getX(), area.getY(), 40, 40);
         }
 
         // Determine role type
