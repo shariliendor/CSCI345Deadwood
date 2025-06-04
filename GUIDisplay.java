@@ -149,17 +149,22 @@ public class GUIDisplay implements Display {
             Room room = player.getLocation();
             Area area = room.getArea();
 
-            int offsetX = (i % 4) * 15; // small offset to avoid overlap
-            int offsetY = (i / 4) * 15;
+            int offsetX = (i % 4) * 15;
+            int offsetY = (i / 4) * 15 + 120; // add 120 so it's below the card
 
             JLabel iconLabel = playerIcons.get(player);
+            String baseIconFile = playerIconFiles[i % playerIconFiles.length];
+            String letter = baseIconFile.substring(0, 1);
+            int rank = player.getRank();
+            String iconFile = "images/" + letter + rank + ".png";
+
             if (iconLabel == null) {
-                String iconFile = "images/" + playerIconFiles[i % playerIconFiles.length];
                 iconLabel = new JLabel(new ImageIcon(iconFile));
                 iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
                 playerIcons.put(player, iconLabel);
                 boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
             } else {
+                iconLabel.setIcon(new ImageIcon(iconFile)); // update icon in case rank changed
                 iconLabel.setBounds(area.getX() + offsetX, area.getY() + offsetY, 20, 20);
             }
         }
@@ -225,10 +230,23 @@ public class GUIDisplay implements Display {
 
     @Override
     public void displayTakeRoleOutcome(Role role) {
-        Room location = role.getPlayer().getLocation();
+        Player player = role.getPlayer();
+        Area area = role.getArea();
+
+        // Move the player's icon to the role's area
+        JLabel iconLabel = playerIcons.get(player);
+        if (iconLabel != null) {
+            iconLabel.setBounds(area.getX(), area.getY(), 20, 20);
+        }
+
+        // Determine role type
+        Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
         String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel() + ")<br>Line: \"" + role.getLine() + "\"";
         setLabel(interfacePane, text);
+
+        boardPane.revalidate();
+        boardPane.repaint();
     }
 
     @Override
@@ -236,21 +254,20 @@ public class GUIDisplay implements Display {
         if (room instanceof Set setRoom) {
             Card card = setRoom.getCard();
             if (card != null) {
-                String cardName = card.getName();
-                if (!roomImages.containsKey(cardName)) {
-                    System.out.println("Showing card: " + cardName);
-
-                    Area area = room.getArea();
-                    ImageIcon icon = new ImageIcon("images/Cards/" + card.getImage());
-                    JLabel cardLabel = new JLabel(icon);
-                    cardLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
-
-                    boardPane.add(cardLabel, JLayeredPane.PALETTE_LAYER);
-                    roomImages.put(cardName, cardLabel);
-
-                    boardPane.revalidate();
-                    boardPane.repaint();
+                String setName = setRoom.getName();
+                if (roomImages.containsKey(setName)) {
+                    boardPane.remove(roomImages.get(setName)); // Remove the cardback
+                    roomImages.remove(setName);
                 }
+
+                ImageIcon icon = new ImageIcon("images/Cards/" + card.getImage());
+                JLabel cardLabel = new JLabel(icon);
+                Area area = room.getArea();
+                cardLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+                boardPane.add(cardLabel, JLayeredPane.PALETTE_LAYER);
+                roomImages.put(setName, cardLabel);
+                boardPane.revalidate();
+                boardPane.repaint();
             }
         }
     }
