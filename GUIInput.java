@@ -62,14 +62,22 @@ public class GUIInput implements Input{
 
     private String selectOption(String toSelect, String[] options) {
         // commented these lines out so it doesn't break, for now there's a bug
-        //JLayeredPane interfacePane = getInterfacePane();
-        //clear(interfacePane);
+//        JLayeredPane interfacePane = getInterfacePane();
+//        clear(interfacePane);
+        JLayeredPane interfacePane = new JLayeredPane();
+        interfacePane.setPreferredSize(new Dimension(frame.getWidth() / 5, frame.getHeight() / 2));
+        interfacePane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0), 5));
+        interfacePane.setLayout(new FlowLayout());
+        frame.add(interfacePane);
+        frame.pack();
 
         JLabel prompt = new JLabel("Select a(n) " + toSelect + ":");
-        //interfacePane.add(prompt);
+        interfacePane.add(prompt);
 
         // idk why I had to do it this way, it's really dumb but it works ig
         final String[] selectedOption = new String[1];
+
+
 
         for (String option: options) {
             JButton button = new JButton(option);
@@ -79,7 +87,22 @@ public class GUIInput implements Input{
                     selectedOption[0] = option;
                 }
             });
+
+            interfacePane.add(button);
         }
+        frame.pack();
+
+        // wait for a button to be pressed
+        while (selectedOption[0] == null) {
+            try {
+                Thread.sleep(1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        frame.remove(interfacePane);
+        frame.pack();
 
         return selectedOption[0];
     }
@@ -92,8 +115,9 @@ public class GUIInput implements Input{
 
     private JLayeredPane getInterfacePane() {
         System.out.println(frame.getContentPane());
-        JLayeredPane sidePane = (JLayeredPane) frame.getComponents()[1];//getPane(frame, "Side Pane");
+        JLayeredPane sidePane = (JLayeredPane) frame.getContentPane().getComponent(1);//frame.getComponents()[1];//getPane(frame, "Side Pane");
         assert sidePane != null;
+        System.out.println(sidePane.getName());
         return getPane(sidePane, "Interface");
     }
 

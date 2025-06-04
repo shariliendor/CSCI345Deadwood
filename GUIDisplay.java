@@ -4,11 +4,13 @@ import java.util.HashMap;
 
 public class GUIDisplay implements Display{
     private final int WIDTH = 750, HEIGHT = 450;
+    private final JFrame frame;
     private final JLayeredPane boardPane, sidePane, dayPane, currPlayerPane, standingsPane, interfacePane;
 
     private final HashMap<Player, Integer> playerNumbers = new HashMap<>();
 
     public GUIDisplay(JFrame frame) {
+        this.frame = frame;
         frame.setSize(WIDTH, HEIGHT);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -16,10 +18,10 @@ public class GUIDisplay implements Display{
 
         boardPane = getLayeredPane(4 * WIDTH / 5, HEIGHT);
         boardPane.add(new JLabel(getScaledImage("images/board.jpg", 4 * WIDTH / 5, HEIGHT)));
-        frame.add("Board", boardPane);
+        frame.getContentPane().add("Board", boardPane);
 
         sidePane = getLayeredPane(WIDTH / 5, HEIGHT);
-        frame.add("Side Pane", sidePane);
+        frame.getContentPane().add("Side Pane", sidePane);
         sidePane.setLayout(new FlowLayout());
 
         dayPane = getLayeredPane(WIDTH / 5, HEIGHT / 30);
@@ -27,17 +29,17 @@ public class GUIDisplay implements Display{
         dayPane.setLayout(new FlowLayout());
         sidePane.add("Day", dayPane);
 
-        currPlayerPane = getLayeredPane(WIDTH / 5, 5 * HEIGHT / 30);
+        currPlayerPane = getLayeredPane(WIDTH / 5, 8 * HEIGHT / 30);
         currPlayerPane.setBorder(BorderFactory.createTitledBorder("Active Player"));
         currPlayerPane.setLayout(new FlowLayout());
         sidePane.add("Current Player", currPlayerPane);
 
-        standingsPane = getLayeredPane(WIDTH / 5, 8 * HEIGHT / 30);
+        standingsPane = getLayeredPane(WIDTH / 5, 10 * HEIGHT / 30);
         standingsPane.setBorder(BorderFactory.createTitledBorder("Standings"));
         standingsPane.setLayout(new FlowLayout());
         sidePane.add("Standings", standingsPane);
 
-        interfacePane = getLayeredPane(WIDTH / 5, 15 * HEIGHT / 30);
+        interfacePane = getLayeredPane(WIDTH / 5, 9 * HEIGHT / 30);
         interfacePane.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         interfacePane.setLayout(new FlowLayout());
         sidePane.add("Interface", interfacePane);
@@ -85,20 +87,23 @@ public class GUIDisplay implements Display{
     @Override
     public void displayPlayerInfo(Player player) {
         // update currPlayer panel with stats of current player
-        StringBuilder labelText = new StringBuilder();
-        labelText.append("Rank: " + player.getRank() + "\n");
-        labelText.append("Points: " + player.getPoints() + "\n");
+        StringBuilder labelText = new StringBuilder("<html>");
+        labelText.append("Name: " + player.getName() + "<br>");
+        labelText.append("Rank: " + player.getRank() + "<br>");
+        labelText.append("Points: " + player.getPoints() + "<br>");
 
         if (player.hasRole()) {
-            labelText.append("Role: " + player.getRole().getName() + "\n");
+            labelText.append("Role: " + player.getRole().getName() + "<br>");
         } else {
-            labelText.append("Role: None" + "\n");
+            labelText.append("Role: None" + "<br>");
         }
 
         HashMap<String, Integer> assets = player.getAssets();
         for (String currency: assets.keySet()) {
-            labelText.append(currency + "s: " + assets.get(currency) + "\n");
+            labelText.append(currency + "s: " + assets.get(currency) + "<br>");
         }
+
+        labelText.append("</html>");
 
         setLabel(currPlayerPane, labelText.toString());
     }
@@ -122,11 +127,13 @@ public class GUIDisplay implements Display{
             }
         }
         // update standings panel
-        StringBuilder standingsText = new StringBuilder();
+        StringBuilder standingsText = new StringBuilder("<html>");
 
         for (int i = 0; i < players.length; i++) {
-            standingsText.append((i + 1) + ": " + players[i].getName() + " (" + players[i].getPoints() + " points)" + "\n");
+            standingsText.append((i + 1) + ": " + players[i].getName() + " (" +
+                    (players[i].getPoints() + players[i].getRank() * 5) + " points)" + "<br>");
         }
+        standingsText.append("</html>");
 
         setLabel(standingsPane, standingsText.toString());
     }
@@ -140,7 +147,7 @@ public class GUIDisplay implements Display{
     @Override
     public void displayUpdatedRank(int newRank) {
         // update player sprites
-        setLabel(interfacePane, "Congratulations! You are now rank " + newRank + "!");
+        setLabel(interfacePane, "<html><p>Congratulations! You are now rank " + newRank + "!</p></html>");
     }
 
     @Override
@@ -152,20 +159,20 @@ public class GUIDisplay implements Display{
     public void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft) {
         // add a label to the interface panel
         // click to continue
-        StringBuilder labelText = new StringBuilder();
+        StringBuilder labelText = new StringBuilder("<html>");
 
-        if (success) labelText.append("Success!" + "\n");
-        else labelText.append("Failure..." + "\n");
+        if (success) labelText.append("Success!" + "<br>");
+        else labelText.append("Failure..." + "<br>");
 
         if(earnings.isEmpty()) {
-            labelText.append("You didn't earn anything." + "\n");
+            labelText.append("You didn't earn anything." + "<br>");
         } else {
             for (String currency: earnings.keySet()) {
-                labelText.append("You earned " + earnings.get(currency) + " " + currency + "(s)." + "\n");
+                labelText.append("You earned " + earnings.get(currency) + " " + currency + "(s)." + "<br>");
             }
         }
 
-        labelText.append("There are " + shotsLeft + " scenes left to shoot on this set.");
+        labelText.append("There are " + shotsLeft + " scenes left to shoot on this set.</p></html>");
 
         setLabel(interfacePane, labelText.toString());
     }
@@ -173,8 +180,8 @@ public class GUIDisplay implements Display{
     @Override
     public void displayRehearseOutcome(Role role) {
         String labelText =
-                "You have rehearsed. There are now " + role.getPracticeChips()
-                + " practice chips on " + role.getName();
+                "<html><p>You have rehearsed. There are now " + role.getPracticeChips()
+                + " practice chips on " + role.getName() + "</p></html>";
         setLabel(interfacePane, labelText);
     }
 
@@ -186,22 +193,26 @@ public class GUIDisplay implements Display{
 
     @Override
     public void displayWrapOutcome(Set set, HashMap<Player, Integer> playerEarnings, int scenesLeft) {
-        StringBuilder labelText = new StringBuilder();
+        StringBuilder labelText = new StringBuilder("<html>");
 
-        labelText.append(set.getName() + " has been wrapped!" + "\n");
+        labelText.append(set.getName() + " has been wrapped!" + "<br>");
 
         for (Player player: playerEarnings.keySet()) {
-            labelText.append(player.getName() + " earned " + playerEarnings.get(player) + " dollars." + "\n");
+            labelText.append(player.getName() + " earned " + playerEarnings.get(player) + " dollars." + "<br>");
         }
 
-        labelText.append("\n" + "There are " + scenesLeft + " sets left to shoot.");
+        labelText.append("<br>" + "There are " + scenesLeft + " sets left to shoot." + "</html>");
 
         setLabel(interfacePane, labelText.toString());
     }
 
     @Override
     public void announceWinner(Player player) {
-        setLabel(interfacePane, player.getName() + " wins with " + (player.getPoints() + player.getRank()*5) + " points!");
+        clear(interfacePane);
+        setLabel(interfacePane,
+                "<html><p>" +
+                player.getName() + " wins with " + (player.getPoints() + player.getRank()*5) + " points!" +
+                "</p></html>");
     }
 
     @Override
@@ -230,6 +241,7 @@ public class GUIDisplay implements Display{
         clear(pane);
         JLabel label = new JLabel(str);
         pane.add(label);
+        frame.pack();
     }
 
     private void clear(JLayeredPane pane) {
