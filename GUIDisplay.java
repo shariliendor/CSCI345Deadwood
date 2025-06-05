@@ -324,11 +324,7 @@ public class GUIDisplay implements Display {
     @Override
     public void displayTakeRoleOutcome(Role role) {
         Player player = role.getPlayer();
-        Area area = role.getArea();
-        JLabel iconLabel = playerIcons.get(player);
-        if (iconLabel != null) {
-            iconLabel.setBounds(area.getX(), area.getY(), 40, 40);
-        }
+        displayPlayerLocations(playerIcons.keySet().toArray(new Player[0]));
 
         Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
