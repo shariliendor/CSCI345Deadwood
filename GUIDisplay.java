@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
 public class GUIDisplay implements Display {
@@ -107,10 +106,10 @@ public class GUIDisplay implements Display {
 
     @Override
     public void displayPlayerInfo(Player player) {
-        StringBuilder labelText = new StringBuilder();
+        StringBuilder labelText = new StringBuilder("<html>");
         labelText.append("Name: ").append(player.getName()).append("<br>");
         labelText.append("Rank: ").append(player.getRank()).append("<br>");
-        labelText.append("Points: ").append((player.getPoints() + player.getRank() * 5)).append("<br>");
+        labelText.append("Points: ").append(player.getPoints()).append("<br>");
         if (player.hasRole()) {
             labelText.append("Role: ").append(player.getRole().getName()).append("<br>");
         } else {
@@ -120,13 +119,8 @@ public class GUIDisplay implements Display {
         for (String currency : assets.keySet()) {
             labelText.append(currency).append("s: ").append(assets.get(currency)).append("<br>");
         }
+        labelText.append("</html>");
         setLabel(currPlayerPane, labelText.toString());
-
-        updateStandings();
-    }
-
-    private void updateStandings() {
-        displayStandings(playerNumbers.keySet().toArray(new Player[0]));
     }
 
     @Override
@@ -145,7 +139,7 @@ public class GUIDisplay implements Display {
             }
         }
 
-        StringBuilder standingsText = new StringBuilder();
+        StringBuilder standingsText = new StringBuilder("<html>");
         for (int i = 0; i < players.length; i++) {
             standingsText.append(i + 1).append(": ")
                     .append(players[i].getName())
@@ -153,6 +147,7 @@ public class GUIDisplay implements Display {
                     .append(players[i].getPoints() + players[i].getRank() * 5)
                     .append(" points)<br>");
         }
+        standingsText.append("</html>");
         setLabel(standingsPane, standingsText.toString());
     }
 
@@ -208,26 +203,20 @@ public class GUIDisplay implements Display {
 
         boardPane.revalidate();
         boardPane.repaint();
-
-        updateStandings();
     }
 
     @Override
     public void displayUpdatedRank(int newRank) {
         setLabel(interfacePane, "Congratulations! You are now rank " + newRank + "!");
-        updateStandings();
-
-        waitForContinue(interfacePane);
     }
 
     @Override
     public void displayUpgradeCosts() {
-        // on the board already
     }
 
     @Override
     public void displayActOutcome(boolean success, HashMap<String, Integer> earnings, int shotsLeft) {
-        StringBuilder labelText = new StringBuilder();
+        StringBuilder labelText = new StringBuilder("<html>");
         labelText.append(success ? "Success!<br>" : "Failure...<br>");
         if (earnings.isEmpty()) {
             labelText.append("You didn't earn anything.<br>");
@@ -237,7 +226,7 @@ public class GUIDisplay implements Display {
                         .append("(s).<br>");
             }
         }
-        labelText.append("There are ").append(shotsLeft).append(" scenes left to shoot on this set.");
+        labelText.append("There are ").append(shotsLeft).append(" scenes left to shoot on this set.</html>");
         setLabel(interfacePane, labelText.toString());
 
         // 🛠️ Corrected to update based on the actual player’s location
@@ -246,10 +235,6 @@ public class GUIDisplay implements Display {
                 updateShotCounters(set);
             }
         }
-
-        updateStandings();
-
-        waitForContinue(interfacePane);
     }
 
     public void updateShotCounters(Set set) {
@@ -281,9 +266,7 @@ public class GUIDisplay implements Display {
 
     @Override
     public void displayRehearseOutcome(Role role) {
-        setLabel(interfacePane, "You rehearsed. \nPractice chips on " + role.getName() + ": " + role.getPracticeChips());
-
-        waitForContinue(interfacePane);
+        setLabel(interfacePane, "You rehearsed. Practice chips on " + role.getName() + ": " + role.getPracticeChips());
     }
 
     @Override
@@ -293,16 +276,24 @@ public class GUIDisplay implements Display {
 
     @Override
     public void displayWrapOutcome(Set set, HashMap<Player, Integer> playerEarnings, int scenesLeft) {
-        StringBuilder labelText = new StringBuilder();
+        StringBuilder labelText = new StringBuilder("<html>");
         labelText.append(set.getName()).append(" has been wrapped!<br>");
         for (Player player : playerEarnings.keySet()) {
             labelText.append(player.getName()).append(" earned ").append(playerEarnings.get(player))
                     .append(" dollars.<br>");
         }
-        labelText.append("<br>There are ").append(scenesLeft).append(" sets left to shoot.");
+        labelText.append("<br>There are ").append(scenesLeft).append(" sets left to shoot.</html>");
         setLabel(interfacePane, labelText.toString());
 
-        // Clear shot counter icons
+        // Remove the card image from the board
+        String setName = set.getName();
+        if (roomImages.containsKey(setName)) {
+            JLabel cardLabel = roomImages.get(setName);
+            boardPane.remove(cardLabel);
+            roomImages.remove(setName);
+        }
+
+        // Remove shot counter icons
         JLabel[] icons = shotCounterIcons.get(set);
         if (icons != null) {
             for (JLabel icon : icons) {
@@ -315,10 +306,6 @@ public class GUIDisplay implements Display {
 
         boardPane.revalidate();
         boardPane.repaint();
-
-        updateStandings();
-
-        waitForContinue(interfacePane);
     }
 
     @Override
@@ -345,33 +332,12 @@ public class GUIDisplay implements Display {
 
         Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
-        String text = "You took the " + type + " role: \n\"" + role.getName() + "\" (Level " + role.getLevel()
+        String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel()
                 + ")<br>Line: \"" + role.getLine() + "\"";
         setLabel(interfacePane, text);
 
         boardPane.revalidate();
         boardPane.repaint();
-
-        waitForContinue(interfacePane);
-    }
-
-    private void waitForContinue(JLayeredPane pane) {
-        final String[] selected = new String[1];
-
-        JButton button = new JButton("Continue");
-        button.addActionListener((ActionEvent e) -> selected[0] = "continue");
-        pane.add(button);
-
-        frame.revalidate();
-        frame.repaint();
-
-        while (selected[0] == null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException ignored) {}
-        }
-
-        clear(pane);
     }
 
     @Override
