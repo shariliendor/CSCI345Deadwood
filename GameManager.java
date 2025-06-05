@@ -49,7 +49,8 @@ public class GameManager {
                 }
             }
 
-            if (endGame) return true;
+            if (endGame)
+                return true;
         }
         daysLeft--;
 
@@ -87,7 +88,8 @@ public class GameManager {
         clearPlayerRoles(playersOnCard);
     }
 
-    private void distributeOnCardBonuses(Set set, ArrayList<Player> playersOnCard, HashMap<Player, Integer> playerEarnings) {
+    private void distributeOnCardBonuses(Set set, ArrayList<Player> playersOnCard,
+            HashMap<Player, Integer> playerEarnings) {
         if (playersOnCard.isEmpty()) {
             return;
         }
@@ -122,6 +124,7 @@ public class GameManager {
 
     // Returns whether the game was ended
     public boolean nextTurn() {
+        controller.setLastActingPlayer(players[currentPlayer]); // <== Add this line
         boolean gameEnded = players[currentPlayer].takeTurn(controller);
 
         // After player's turn, update displayed room image

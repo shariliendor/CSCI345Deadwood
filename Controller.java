@@ -105,4 +105,10 @@ public class Controller {
     public void displayRoomImage(Room room) {
         display.showRoomImage(room);
     }
+
+    public void setLastActingPlayer(Player player) {
+    if (display instanceof GUIDisplay guiDisplay) {
+        guiDisplay.setLastActingPlayer(player);
+    }
+}
 }

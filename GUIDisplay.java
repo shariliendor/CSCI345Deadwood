@@ -11,10 +11,10 @@ public class GUIDisplay implements Display {
     private final HashMap<Player, Integer> playerNumbers = new HashMap<>();
     private final HashMap<String, JLabel> roomImages = new HashMap<>();
     private final HashMap<Player, JLabel> playerIcons = new HashMap<>();
+    private final HashMap<Set, JLabel[]> shotCounterIcons = new HashMap<>();
 
     private final JLabel boardImageLabel;
 
-    // Your player icon filenames in order
     private final String[] playerIconFiles = {
             "b1.png", "c1.png", "g1.png", "o1.png", "p1.png", "r1.png", "v1.png", "w1.png", "y1.png"
     };
@@ -22,6 +22,12 @@ public class GUIDisplay implements Display {
     private final String[] playerIconPrefixes = {
             "b", "c", "g", "o", "p", "r", "v", "w", "y"
     };
+
+    private Player lastActingPlayer;
+
+    public void setLastActingPlayer(Player player) {
+        this.lastActingPlayer = player;
+    }
 
     public GUIDisplay(JFrame frame) {
         this.frame = frame;
@@ -69,10 +75,6 @@ public class GUIDisplay implements Display {
         pane.setPreferredSize(new Dimension(width, height));
         pane.setLayout(null);
         return pane;
-    }
-
-    public JLayeredPane getInterfacePane() {
-        return interfacePane;
     }
 
     private void setLabel(JLayeredPane pane, String str) {
@@ -139,8 +141,7 @@ public class GUIDisplay implements Display {
 
         StringBuilder standingsText = new StringBuilder();
         for (int i = 0; i < players.length; i++) {
-            standingsText.append(i + 1)
-                    .append(": ")
+            standingsText.append(i + 1).append(": ")
                     .append(players[i].getName())
                     .append(" (")
                     .append(players[i].getPoints() + players[i].getRank() * 5)
@@ -149,71 +150,59 @@ public class GUIDisplay implements Display {
         setLabel(standingsPane, standingsText.toString());
     }
 
-@Override
-public void displayPlayerLocations(Player[] players) {
-    for (int i = 0; i < players.length; i++) {
-        Player player = players[i];
+    @Override
+    public void displayPlayerLocations(Player[] players) {
+        for (int i = 0; i < players.length; i++) {
+            Player player = players[i];
+            JLabel iconLabel = playerIcons.get(player);
+            boolean isNew = false;
 
-        JLabel iconLabel = playerIcons.get(player);
-        boolean isNew = false;
+            int rank = player.getRank();
+            int iconRank = Math.min(rank, 6);
+            String iconFile = "images/" + playerIconPrefixes[i] + iconRank + ".png";
 
-        int rank = player.getRank();
-        int iconRank = Math.min(rank, 6);
-        String iconFile = "images/" + playerIconPrefixes[i] + iconRank + ".png";
+            if (iconLabel == null) {
+                iconLabel = new JLabel(new ImageIcon(iconFile));
+                playerIcons.put(player, iconLabel);
+                isNew = true;
+            } else {
+                iconLabel.setIcon(new ImageIcon(iconFile));
+            }
 
-        if (iconLabel == null) {
-            iconLabel = new JLabel(new ImageIcon(iconFile));
-            playerIcons.put(player, iconLabel);
-            isNew = true;
-        } else {
-            iconLabel.setIcon(new ImageIcon(iconFile));
-        }
+            Room room = player.getLocation();
+            Area area;
+            int x, y;
 
-        Room room = player.getLocation();
-        Area area;
-        int x, y;
-
-        if (player.hasRole()) {
-            Role role = player.getRole();
-            if (room instanceof Set set) {
-                if (set.isOnCardRole(role)) {
-                    // ✅ On-card role: use Set’s area + offset
+            if (player.hasRole()) {
+                Role role = player.getRole();
+                if (room instanceof Set set && set.isOnCardRole(role)) {
                     area = room.getArea();
                     int offsetX = (i % 4) * 15;
                     int offsetY = (i / 4) * 15;
                     x = area.getX() + offsetX;
                     y = area.getY() + offsetY;
                 } else {
-                    // ✅ Off-card role: use Role’s own area, no offset
                     area = role.getArea();
                     x = area.getX();
                     y = area.getY();
                 }
             } else {
-                // fallback: treat it like off-card
-                area = role.getArea();
-                x = area.getX();
-                y = area.getY();
+                area = room.getArea();
+                int offsetX = (i % 4) * 15;
+                int offsetY = (i / 4) * 15;
+                x = area.getX() + offsetX;
+                y = area.getY() + offsetY + 120;
             }
-        } else {
-            // ✅ Not on role: use Room’s area + offset
-            area = room.getArea();
-            int offsetX = (i % 4) * 15;
-            int offsetY = (i / 4) * 15;
-            x = area.getX() + offsetX;
-            y = area.getY() + offsetY + 120;
+
+            iconLabel.setBounds(x, y, 40, 40);
+            if (isNew) {
+                boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
+            }
         }
 
-        iconLabel.setBounds(x, y, 40, 40);
-
-        if (isNew) {
-            boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
-        }
+        boardPane.revalidate();
+        boardPane.repaint();
     }
-
-    boardPane.revalidate();
-    boardPane.repaint();
-}
 
     @Override
     public void displayUpdatedRank(int newRank) {
@@ -241,7 +230,41 @@ public void displayPlayerLocations(Player[] players) {
         labelText.append("There are ").append(shotsLeft).append(" scenes left to shoot on this set.");
         setLabel(interfacePane, labelText.toString());
 
+        // 🛠️ Corrected to update based on the actual player’s location
+        for (Player p : playerIcons.keySet()) {
+            if (lastActingPlayer != null && lastActingPlayer.getLocation() instanceof Set set) {
+                updateShotCounters(set);
+            }
+        }
+
         waitForContinue(interfacePane);
+    }
+
+    public void updateShotCounters(Set set) {
+        // Remove old icons
+        if (shotCounterIcons.containsKey(set)) {
+            for (JLabel label : shotCounterIcons.get(set)) {
+                if (label != null) {
+                    boardPane.remove(label);
+                }
+            }
+        }
+
+        int currentShots = set.getShotCounters();
+        Area[] counterAreas = set.getShotCounterAreas();
+        JLabel[] icons = new JLabel[counterAreas.length];
+
+        for (int i = 0; i < currentShots && i < counterAreas.length; i++) {
+            Area area = counterAreas[i];
+            JLabel icon = new JLabel(new ImageIcon("images/shot.png"));
+            icon.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+            boardPane.add(icon, JLayeredPane.MODAL_LAYER);
+            icons[i] = icon;
+        }
+
+        shotCounterIcons.put(set, icons);
+        boardPane.revalidate();
+        boardPane.repaint();
     }
 
     @Override
@@ -267,6 +290,20 @@ public void displayPlayerLocations(Player[] players) {
         labelText.append("<br>There are ").append(scenesLeft).append(" sets left to shoot.");
         setLabel(interfacePane, labelText.toString());
 
+        // Clear shot counter icons
+        JLabel[] icons = shotCounterIcons.get(set);
+        if (icons != null) {
+            for (JLabel icon : icons) {
+                if (icon != null) {
+                    boardPane.remove(icon);
+                }
+            }
+            shotCounterIcons.remove(set);
+        }
+
+        boardPane.revalidate();
+        boardPane.repaint();
+
         waitForContinue(interfacePane);
     }
 
@@ -287,14 +324,11 @@ public void displayPlayerLocations(Player[] players) {
     public void displayTakeRoleOutcome(Role role) {
         Player player = role.getPlayer();
         Area area = role.getArea();
-
-        // Move the player's icon to the role's area
         JLabel iconLabel = playerIcons.get(player);
         if (iconLabel != null) {
             iconLabel.setBounds(area.getX(), area.getY(), 40, 40);
         }
 
-        // Determine role type
         Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
         String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel()
@@ -333,7 +367,7 @@ public void displayPlayerLocations(Player[] players) {
             if (card != null) {
                 String setName = setRoom.getName();
                 if (roomImages.containsKey(setName)) {
-                    boardPane.remove(roomImages.get(setName)); // Remove the cardback
+                    boardPane.remove(roomImages.get(setName));
                     roomImages.remove(setName);
                 }
 
@@ -359,5 +393,9 @@ public void displayPlayerLocations(Player[] players) {
         }
         boardPane.revalidate();
         boardPane.repaint();
+    }
+
+    public JLayeredPane getInterfacePane() {
+        return interfacePane;
     }
 }
