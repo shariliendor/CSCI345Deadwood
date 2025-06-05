@@ -54,9 +54,25 @@ public class GUIInput implements Input {
     }
 
     @Override
-    public int chooseRank(int currRank, int maxRank) {
-        // TODO
-        return currRank;
+    public Upgrade chooseUpgrade(Upgrade[] upgrades) {
+        String[] options = new String[upgrades.length];
+
+        for (int i = 0; i < upgrades.length; i++) {
+            options[i] = "Rank " + upgrades[i].getRank() +
+                    " (" + upgrades[i].getAmount() + " " + upgrades[i].getCurrency() + "s)";
+        }
+
+        String optionSelected = selectOption("upgrade", options);
+
+        // this is really dumb but it's better than trying to parse the string lol
+        // basically I loop through the options until i find selectedOption
+        // and I return the upgrade at that index
+        for (int i = 0; i < options.length; i++) {
+            if (options[i].equals(optionSelected)) {
+                return upgrades[i];
+            }
+        }
+        return null;
     }
 
     private String selectOption(String toSelect, String[] options) {

@@ -107,8 +107,12 @@ public class Controller {
     }
 
     public void setLastActingPlayer(Player player) {
-    if (display instanceof GUIDisplay guiDisplay) {
-        guiDisplay.setLastActingPlayer(player);
+        if (display instanceof GUIDisplay guiDisplay) {
+            guiDisplay.setLastActingPlayer(player);
+        }
     }
-}
+
+    public Upgrade chooseUpgrade(Upgrade[] possibleUpgrades) {
+        return input.chooseUpgrade(possibleUpgrades);
+    }
 }

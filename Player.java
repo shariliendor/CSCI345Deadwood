@@ -46,46 +46,20 @@ public class Player {
             return;
         }
 
-        controller.displayUpdatedRank(rank);
         controller.displayUpgradeCosts();
 
-        int maxRank = UpgradeManager.getMaxRank();
-        ArrayList<Integer> affordableRanks = new ArrayList<>();
-        for (int r = rank + 1; r <= maxRank; r++) {
-            if (canPurchaseRank(r, "dollar") || canPurchaseRank(r, "credit")) {
-                affordableRanks.add(r);
-            }
-        }
 
-        if (affordableRanks.isEmpty()) {
+        Upgrade[] possibleUpgrades = UpgradeManager.getPossibleUpgrades(this);
+
+        if (possibleUpgrades.length == 0) {
             controller.displayInvalidInput("You cannot afford any rank upgrades at this time.");
             return;
         }
 
-        // Use chooseRank with min/max bounds, but ensure the rank is affordable
-        int chosenRank;
-        while (true) {
-            chosenRank = controller.chooseRank(rank, maxRank);
-            if (affordableRanks.contains(chosenRank)) {
-                break;
-            }
-            controller.displayInvalidInput("You cannot afford rank " + chosenRank + ". Please choose again.");
-        }
-
-        int dollarCost = UpgradeManager.getDollarCost(chosenRank);
-        int creditCost = UpgradeManager.getCreditCost(chosenRank);
-
-        if (canPurchaseRank(chosenRank, "dollar") && assets.get("dollar") >= dollarCost) {
-            spend(dollarCost, "dollar");
-            rank = chosenRank;
-            controller.displayUpdatedRank(rank);
-        } else if (canPurchaseRank(chosenRank, "credit") && assets.get("credit") >= creditCost) {
-            spend(creditCost, "credit");
-            rank = chosenRank;
-            controller.displayUpdatedRank(rank);
-        } else {
-            controller.displayInvalidInput("You do not have enough currency to upgrade to that rank.");
-        }
+        Upgrade chosenUpgrade = controller.chooseUpgrade(possibleUpgrades);
+        rank = chosenUpgrade.getRank();
+        spend(chosenUpgrade.getAmount(), chosenUpgrade.getCurrency());
+        controller.displayUpdatedRank(rank);
     }
 
 

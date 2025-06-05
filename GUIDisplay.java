@@ -121,6 +121,12 @@ public class GUIDisplay implements Display {
             labelText.append(currency).append("s: ").append(assets.get(currency)).append("<br>");
         }
         setLabel(currPlayerPane, labelText.toString());
+
+        updateStandings();
+    }
+
+    private void updateStandings() {
+        displayStandings(playerNumbers.keySet().toArray(new Player[0]));
     }
 
     @Override
@@ -202,17 +208,21 @@ public class GUIDisplay implements Display {
 
         boardPane.revalidate();
         boardPane.repaint();
+
+        updateStandings();
     }
 
     @Override
     public void displayUpdatedRank(int newRank) {
         setLabel(interfacePane, "Congratulations! You are now rank " + newRank + "!");
+        updateStandings();
 
         waitForContinue(interfacePane);
     }
 
     @Override
     public void displayUpgradeCosts() {
+        // on the board already
     }
 
     @Override
@@ -236,6 +246,8 @@ public class GUIDisplay implements Display {
                 updateShotCounters(set);
             }
         }
+
+        updateStandings();
 
         waitForContinue(interfacePane);
     }
@@ -269,7 +281,7 @@ public class GUIDisplay implements Display {
 
     @Override
     public void displayRehearseOutcome(Role role) {
-        setLabel(interfacePane, "You rehearsed. Practice chips on " + role.getName() + ": " + role.getPracticeChips());
+        setLabel(interfacePane, "You rehearsed. \nPractice chips on " + role.getName() + ": " + role.getPracticeChips());
 
         waitForContinue(interfacePane);
     }
@@ -304,6 +316,8 @@ public class GUIDisplay implements Display {
         boardPane.revalidate();
         boardPane.repaint();
 
+        updateStandings();
+
         waitForContinue(interfacePane);
     }
 
@@ -331,7 +345,7 @@ public class GUIDisplay implements Display {
 
         Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
-        String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel()
+        String text = "You took the " + type + " role: \n\"" + role.getName() + "\" (Level " + role.getLevel()
                 + ")<br>Line: \"" + role.getLine() + "\"";
         setLabel(interfacePane, text);
 

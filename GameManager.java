@@ -18,6 +18,8 @@ public class GameManager {
     }
 
     public void playGame() {
+        controller.displayStandings(getStandings());
+
         boolean gameEnded = false;
         deck.shuffle();
 
