@@ -271,7 +271,7 @@ public class GUIDisplay implements Display {
         labelText.append("There are ").append(shotsLeft).append(" scenes left to shoot on this set.");
         setLabel(interfacePane, labelText.toString());
 
-        // 🛠️ Corrected to update based on the actual player’s location
+        
         for (Player p : playerIcons.keySet()) {
             if (lastActingPlayer != null && lastActingPlayer.getLocation() instanceof Set set) {
                 updateShotCounters(set);
@@ -284,7 +284,7 @@ public class GUIDisplay implements Display {
     }
 
     public void updateShotCounters(Set set) {
-        // Remove old icons
+        
         if (shotCounterIcons.containsKey(set)) {
             for (JLabel label : shotCounterIcons.get(set)) {
                 if (label != null) {
