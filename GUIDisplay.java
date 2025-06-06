@@ -173,7 +173,7 @@ public class GUIDisplay implements Display {
                     maxPointsPlayer = player;
                 }
             }
-            standingsText.append(place + 1).append(": ")
+            standingsText.append(place).append(": ")
                     .append(maxPointsPlayer.getName())
                     .append(" (")
                     .append(maxPointsPlayer.getPoints() + maxPointsPlayer.getRank() * 5)
