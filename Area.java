@@ -8,6 +8,15 @@ public class Area {
         this.height = height;
     }
 
+    public static Area getScaledArea(Area area, double scaleX, double scaleY) {
+        int newX = (int) (area.getX() * scaleX);
+        int newY = (int) (area.getY() * scaleY);
+        int newWidth = (int) (area.getWidth() * scaleX);
+        int newHeight = (int) (area.getHeight() * scaleY);
+
+        return new Area(newX, newY, newWidth, newHeight);
+    }
+
     public int getHeight() {
         return height;
     }

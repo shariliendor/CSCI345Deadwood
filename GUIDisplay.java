@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,6 +38,7 @@ public class GUIDisplay implements Display {
         frame.setLayout(new BorderLayout());
 
         boardPane = getLayeredPane(WIDTH, HEIGHT);
+
         boardImageLabel = new JLabel(new ImageIcon("images/board.jpg"));
         boardImageLabel.setBounds(0, 0, WIDTH, HEIGHT);
         boardPane.add(boardImageLabel, JLayeredPane.DEFAULT_LAYER);
@@ -55,6 +55,14 @@ public class GUIDisplay implements Display {
         interfacePane = createSideSection("Interface");
 
         frame.setVisible(true);
+
+        // resize the board image
+        clear(boardPane);
+        Dimension boardDim = getImageDimensions("images/board.jpg");
+        Area origBoardArea = new Area(0, 0, (int) boardDim.getWidth(), (int) boardDim.getHeight());
+        JLabel resizedBoardImageLabel = getImageLabelScaledToBoard("images/board.jpg", origBoardArea);
+
+        boardPane.add(resizedBoardImageLabel, JLayeredPane.DEFAULT_LAYER);
     }
 
     private JLayeredPane createSideSection(String title) {
@@ -177,20 +185,6 @@ public class GUIDisplay implements Display {
     public void displayPlayerLocations(Player[] players) {
         for (int i = 0; i < players.length; i++) {
             Player player = players[i];
-            JLabel iconLabel = playerIcons.get(player);
-            boolean isNew = false;
-
-            int rank = player.getRank();
-            int iconRank = Math.min(rank, 6);
-            String iconFile = "images/" + playerIconPrefixes[i] + iconRank + ".png";
-
-            if (iconLabel == null) {
-                iconLabel = new JLabel(new ImageIcon(iconFile));
-                playerIcons.put(player, iconLabel);
-                isNew = true;
-            } else {
-                iconLabel.setIcon(new ImageIcon(iconFile));
-            }
 
             Room room = player.getLocation();
             Area area;
@@ -217,7 +211,29 @@ public class GUIDisplay implements Display {
                 y = area.getY() + offsetY + 120;
             }
 
-            iconLabel.setBounds(x, y, 40, 40);
+            JLabel iconLabel = playerIcons.get(player);
+            boolean isNew = false;
+
+            int rank = player.getRank();
+            int iconRank = Math.min(rank, 6);
+            String iconFile = "images/" + playerIconPrefixes[i] + iconRank + ".png";
+
+            if (iconLabel == null) {
+                iconLabel = new JLabel(new ImageIcon(iconFile));
+                playerIcons.put(player, iconLabel);
+                isNew = true;
+            } else {
+                iconLabel.setIcon(new ImageIcon(iconFile));
+            }
+
+            // resizing
+            Area iconArea = new Area(x, y, 40, 40);
+            JLabel scaledIconLabel = getImageLabelScaledToBoard(iconFile, iconArea);
+
+            iconLabel.setIcon(scaledIconLabel.getIcon());
+            iconLabel.setBounds(scaledIconLabel.getBounds());
+
+
             if (isNew) {
                 boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
             }
@@ -282,8 +298,11 @@ public class GUIDisplay implements Display {
 
         for (int i = 0; i < currentShots && i < counterAreas.length; i++) {
             Area area = counterAreas[i];
-            JLabel icon = new JLabel(new ImageIcon("images/shot.png"));
-            icon.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+
+            // resizing
+            JLabel icon = getImageLabelScaledToBoard("images/shot.png", area);
+
+
             boardPane.add(icon, JLayeredPane.MODAL_LAYER);
             icons[i] = icon;
         }
@@ -362,7 +381,7 @@ public class GUIDisplay implements Display {
 
         Room location = player.getLocation();
         String type = (location instanceof Set set && set.isOnCardRole(role)) ? "On-card" : "Off-card";
-        String text = "You took the " + type + " role: \"" + role.getName() + "\" (Level " + role.getLevel()
+        String text = "You took the " + type + " role: \n\"" + role.getName() + "\" (Level " + role.getLevel()
                 + ")<br>Line: \"" + role.getLine() + "\"";
         setLabel(interfacePane, text);
 
@@ -403,10 +422,13 @@ public class GUIDisplay implements Display {
                     roomImages.remove(setName);
                 }
 
-                ImageIcon icon = new ImageIcon("images/Cards/" + card.getImage());
-                JLabel cardLabel = new JLabel(icon);
+                // resizing
+                String fileName = "images/Cards/" + card.getImage();
                 Area area = room.getArea();
-                cardLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+
+                JLabel cardLabel = getImageLabelScaledToBoard(fileName, area);
+
+
                 boardPane.add(cardLabel, JLayeredPane.PALETTE_LAYER);
                 roomImages.put(setName, cardLabel);
                 boardPane.revalidate();
@@ -418,8 +440,10 @@ public class GUIDisplay implements Display {
     public void initializeCardbacks(Set[] sets) {
         for (Set set : sets) {
             Area area = set.getArea();
-            JLabel cardbackLabel = new JLabel(new ImageIcon("images/Cardback.png"));
-            cardbackLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+
+            // resizing
+            JLabel cardbackLabel = getImageLabelScaledToBoard("images/Cardback.png", area);
+
             boardPane.add(cardbackLabel, JLayeredPane.PALETTE_LAYER);
             roomImages.put(set.getName(), cardbackLabel);
         }
@@ -429,5 +453,37 @@ public class GUIDisplay implements Display {
 
     public JLayeredPane getInterfacePane() {
         return interfacePane;
+    }
+
+    private JLabel getImageLabelScaledToBoard(String fileName, Area area) {
+        Dimension boardDim = getImageDimensions("images/board.jpg");
+        double scaleX = boardPane.getWidth() / boardDim.getWidth();
+        double scaleY = boardPane.getHeight() / boardDim.getHeight();
+        // make sure the board doesn't stretch
+        double scale = Math.min(scaleX, scaleY);
+        Area scaledArea = Area.getScaledArea(area, scale, scale);
+
+        return getScaledImageLabel(fileName, scaledArea);
+    }
+
+    private ImageIcon getScaledImageIcon(String fileName, Area area) {
+        ImageIcon imageicon = new ImageIcon(fileName);
+        Image scaledImage = imageicon.getImage().getScaledInstance(area.getWidth(), area.getHeight(), Image.SCALE_DEFAULT);
+        imageicon.setImage(scaledImage);
+
+        return imageicon;
+    }
+
+    private JLabel getScaledImageLabel(String fileName, Area area) {
+        ImageIcon imageicon = getScaledImageIcon(fileName, area);
+        JLabel scaledLabel = new JLabel(imageicon);
+        scaledLabel.setBounds(area.getX(), area.getY(), area.getWidth(), area.getHeight());
+
+        return scaledLabel;
+    }
+
+    private Dimension getImageDimensions(String fileName) {
+        ImageIcon imageIcon = new ImageIcon(fileName);
+        return new Dimension(imageIcon.getIconWidth(), imageIcon.getIconHeight());
     }
 }
