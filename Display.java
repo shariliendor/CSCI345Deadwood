@@ -35,5 +35,5 @@ public interface Display {
 
     void displayTakeRoleOutcome(Role role);
 
-    void showRoomImage(Room room);
+    default void showRoomImage(Room room) {};
 }
