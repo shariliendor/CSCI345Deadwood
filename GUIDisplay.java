@@ -161,10 +161,11 @@ public class GUIDisplay implements Display {
 
         int place = 0;
         while (!toBeDisplayed.isEmpty()) {
-            place ++;
+            place++;
             Player maxPointsPlayer = toBeDisplayed.get(0);
-            for (Player player: toBeDisplayed) {
-                if (maxPointsPlayer.getPoints() + maxPointsPlayer.getRank() * 5 < player.getPoints() + player.getRank() * 5 ) {
+            for (Player player : toBeDisplayed) {
+                if (maxPointsPlayer.getPoints() + maxPointsPlayer.getRank() * 5 < player.getPoints()
+                        + player.getRank() * 5) {
                     maxPointsPlayer = player;
                 }
             }
@@ -176,7 +177,6 @@ public class GUIDisplay implements Display {
 
             toBeDisplayed.remove(maxPointsPlayer);
         }
-
 
         setLabel(standingsPane, standingsText.toString());
     }
@@ -193,11 +193,12 @@ public class GUIDisplay implements Display {
             if (player.hasRole()) {
                 Role role = player.getRole();
                 if (room instanceof Set set && set.isOnCardRole(role)) {
-                    area = room.getArea();
-                    int offsetX = (i % 4) * 15;
-                    int offsetY = (i / 4) * 15;
-                    x = area.getX() + offsetX;
-                    y = area.getY() + offsetY;
+                    Area cardArea = room.getArea();
+                    Area roleArea = role.getArea();
+
+                    // Offset the card's area by the role's relative position
+                    x = cardArea.getX() + roleArea.getX();
+                    y = cardArea.getY() + roleArea.getY();
                 } else {
                     area = role.getArea();
                     x = area.getX();
@@ -216,7 +217,8 @@ public class GUIDisplay implements Display {
 
             int rank = player.getRank();
             int iconRank = Math.min(rank, 6);
-            String iconFile = "images/" + playerIconPrefixes[i] + iconRank + ".png";
+            int playerIndex = playerNumbers.get(player);
+            String iconFile = "images/" + playerIconPrefixes[playerIndex] + iconRank + ".png";
 
             if (iconLabel == null) {
                 iconLabel = new JLabel(new ImageIcon(iconFile));
@@ -232,7 +234,6 @@ public class GUIDisplay implements Display {
 
             iconLabel.setIcon(scaledIconLabel.getIcon());
             iconLabel.setBounds(scaledIconLabel.getBounds());
-
 
             if (isNew) {
                 boardPane.add(iconLabel, JLayeredPane.DRAG_LAYER);
@@ -302,7 +303,6 @@ public class GUIDisplay implements Display {
             // resizing
             JLabel icon = getImageLabelScaledToBoard("images/shot.png", area);
 
-
             boardPane.add(icon, JLayeredPane.MODAL_LAYER);
             icons[i] = icon;
         }
@@ -314,7 +314,8 @@ public class GUIDisplay implements Display {
 
     @Override
     public void displayRehearseOutcome(Role role) {
-        setLabel(interfacePane, "You rehearsed. <br>Practice chips on " + role.getName() + ": " + role.getPracticeChips());
+        setLabel(interfacePane,
+                "You rehearsed. <br>Practice chips on " + role.getName() + ": " + role.getPracticeChips());
 
         waitForContinue(interfacePane);
     }
@@ -428,7 +429,6 @@ public class GUIDisplay implements Display {
 
                 JLabel cardLabel = getImageLabelScaledToBoard(fileName, area);
 
-
                 boardPane.add(cardLabel, JLayeredPane.PALETTE_LAYER);
                 roomImages.put(setName, cardLabel);
                 boardPane.revalidate();
@@ -468,7 +468,8 @@ public class GUIDisplay implements Display {
 
     private ImageIcon getScaledImageIcon(String fileName, Area area) {
         ImageIcon imageicon = new ImageIcon(fileName);
-        Image scaledImage = imageicon.getImage().getScaledInstance(area.getWidth(), area.getHeight(), Image.SCALE_DEFAULT);
+        Image scaledImage = imageicon.getImage().getScaledInstance(area.getWidth(), area.getHeight(),
+                Image.SCALE_DEFAULT);
         imageicon.setImage(scaledImage);
 
         return imageicon;
