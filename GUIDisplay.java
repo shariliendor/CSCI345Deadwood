@@ -115,6 +115,10 @@ public class GUIDisplay implements Display {
     public void displayInvalidInput(String message) {
     }
 
+    public void displayDaysLeft(int daysLeft) {
+        setLabel(dayPane, daysLeft + " days left");
+    }
+
     @Override
     public void displayPlayerTurn(Player player) {
         displayPlayerInfo(player);

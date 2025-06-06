@@ -35,5 +35,7 @@ public interface Display {
 
     void displayTakeRoleOutcome(Role role);
 
-    default void showRoomImage(Room room) {};
+    default void showRoomImage(Room room) {}
+
+    default void displayDaysLeft(int daysLeft) {}
 }

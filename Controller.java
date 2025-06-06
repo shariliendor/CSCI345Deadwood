@@ -115,4 +115,8 @@ public class Controller {
     public Upgrade chooseUpgrade(Upgrade[] possibleUpgrades) {
         return input.chooseUpgrade(possibleUpgrades);
     }
+
+    public void displayDaysLeft(int daysLeft) {
+        display.displayDaysLeft(daysLeft);
+    }
 }

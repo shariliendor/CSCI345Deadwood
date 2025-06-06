@@ -31,6 +31,7 @@ public class GameManager {
     }
 
     public boolean playDay() {
+        controller.displayDaysLeft(daysLeft);
         dealToSets();
         board.resetShotMarkers();
         board.activateSets();
